@@ -63,6 +63,12 @@ function createPost() {
     let content = document.createElement("div");
     content.classList.add("content");
 
+    // Holds subseddit of post.
+    let subseddit = document.createElement("h4");
+    subseddit.classList.add("post-title", "alt-text");
+    let sSeddit = document.createTextNode("/s/temp");
+    subseddit.appendChild(sSeddit);
+
     // Holds title of post.
     let title = document.createElement("h4");
     title.classList.add("post-title", "alt-text")
@@ -78,6 +84,7 @@ function createPost() {
     author.appendChild(poster);
 
     // Appends all elements to list.
+    content.appendChild(subseddit);
     content.appendChild(title);
     content.appendChild(author);
     list.appendChild(votes);

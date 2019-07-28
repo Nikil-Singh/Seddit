@@ -1,2 +1,6 @@
-25/07/19     18:00   18:15   put the first real entry in diary.txt (delete this line!)
-
+Date         Start   End     Comment
+27/07/19     15:00   16:30   Created login and signup buttons.
+28/07/19     11:00   13:00   Implemented a navigation bar with logo, and buttons.
+28/07/19     14:00   16:00   Created modal forms for login and signup.
+28/07/19     17:30   19:00   Created the template for the feed and individual posts.
+  

@@ -1,0 +1,12 @@
+#!/bin/sh
+'''exec' "/Users/nikilsingh/Documents/University Work/2019/Semester 2/2041 - Software Construction/Assignments/Seddit/backend/env/bin/python3.7" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from tqdm._main import main
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
