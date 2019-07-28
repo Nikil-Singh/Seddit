@@ -130,3 +130,64 @@ footer > * {
 }
 
 /* Add your styles here */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.1);
+    transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 10px 15px;
+    width: 20%;
+}
+
+.close-button {
+    float: right;
+    width: 1.5px;
+    line-height: 1.5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background-color: lightgray;
+}
+
+.show-modal {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1.0);
+    transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.modal-textbox {
+    padding: 5px 1px;
+    width: 95%;
+    height: 20%;
+}
+
+.modal-content-items {
+    padding: 5px 1px;
+}
+
+.textbox-glow {
+    border-color: red;
+}
+
+.textbox-error {
+    visibility: hidden;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
