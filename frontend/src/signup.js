@@ -210,12 +210,21 @@ function signupUser(username, password, email, name, apiUrl) {
 
 // Handles any errors sent back from backend.
 function errors(response) {
-    if (response.status == "400") {
-        // Malinformed request.
-    } else if (response.status == "409") {
-        // Username Taken.
+    // If there is an error.
+    if (!response.ok) {
+        throw (response);
     }
     return response;
+}
+
+// Handles a failed signup.
+function failedSignup(error) {
+    
+}
+
+// Handles successful login.
+function successfulSignup(data) {
+
 }
 
 export default genSignup;

@@ -134,7 +134,7 @@ function createSignInBTN() {
     return btnDiv;
 }
 
-function verifySignIn(apiUrl) {
+function verifySignIn(apiUrl, token) {
     // Gets values stored for username and password.
     const username = document.getElementById("login-username");
     const password = document.getElementById("login-password");
@@ -155,8 +155,7 @@ function verifySignIn(apiUrl) {
     document.getElementById("login-error-username").innerText = "";
     document.getElementById("login-error-password").innerText = "";
 
-    loginUser(username.value, password.value, apiUrl);
-
+    return loginUser(username.value, password.value, apiUrl);
 }
 
 // Calls the backend to check if username and password is valid.
@@ -182,12 +181,12 @@ function loginUser(username, password, apiUrl) {
     // Attempts to login through the backend and handles any errors that return.
     fetch(loginAuth, options)
         .then(response => errors(response))
-        .then(response => response.json())
-        .then(response => {
-            console.log(response.token);
+        .then(data => data.json())
+        .then(data => {
+            successfulLogin(data);
         })
-        .catch(event => {
-            console.log(event);
+        .catch(error => {
+            failedLogin(error);
         });
 }
 
@@ -195,9 +194,29 @@ function loginUser(username, password, apiUrl) {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
-        throw (response.status);
+        throw (response);
     }
     return response;
+}
+
+// Handles a failed login.
+function failedLogin(error) {
+    let usernameError = document.getElementById("login-error-username");
+    document.getElementById("login-error-password").innerText = "";
+    console.log(error);
+    if (error.status == "403") {
+        usernameError.innerText = "Invalid username or password";
+    } else if (error.status == "400") {
+        usernameError.innerText = "Missing username or password";
+    }
+}
+
+// Handles a successful login.
+function successfulLogin(data) {
+    let modal = document.getElementById("login-modal");
+    modal.classList.toggle("show-modal");
+    localStorage.setItem("token", data.token);
+    location.reload();
 }
 
 export default genLogin;
