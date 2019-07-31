@@ -1,6 +1,6 @@
 // Written by Nikil Singh (z5209322)
 
-function genFeed() {
+function genFeed(apiUrl) {
     let main = document.createElement("main");
     main.role = "main";
     let uList = document.createElement("ul");

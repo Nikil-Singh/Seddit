@@ -15,10 +15,10 @@ import genFeed from './feed.js'
 // different datasets.
 function initApp(apiUrl) {
     // Initialises the page.
-    genNavBar();
-    genLogin();
-    genSignup();
-    genFeed();
+    genNavBar(apiUrl);
+    genLogin(apiUrl);
+    genSignup(apiUrl);
+    genFeed(apiUrl);
 }
 
 export default initApp;

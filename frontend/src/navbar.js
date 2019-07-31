@@ -4,7 +4,7 @@ import genLogin from './login.js'
 import genSignup from './signup.js'
 
 //Generates navigation bar.
-function genNavBar() {
+function genNavBar(apiUrl) {
     // Creates the actual bar.
     let bar = document.createElement("header");
     bar.id = "nav";

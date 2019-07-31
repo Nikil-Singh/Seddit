@@ -150,7 +150,7 @@ footer > * {
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 10px 15px;
-    width: 20%;
+    width: 30%;
 }
 
 .close-button {
@@ -187,7 +187,6 @@ footer > * {
 }
 
 .textbox-error {
-    visibility: hidden;
     margin-block-start: 0px;
     margin-block-end: 0px;
 }

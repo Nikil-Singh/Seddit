@@ -1,7 +1,7 @@
 // Written by Nikil Singh (z5209322)
 
 // Generates the sign in button.
-function genLogin() {
+function genLogin(apiUrl) {
     const login = createLogin();
     createLoginModal();
     let modal = document.getElementById("login-modal");
@@ -16,14 +16,17 @@ function genLogin() {
     // Event listener for closing login form modal.
     close.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
+        // Gets rid of any error messages.
+        document.getElementById("login-error-username").innerText = "";
+        document.getElementById("login-error-password").innerText = "";
     })
 
     // Event listener for sign in button on login form modal.
     signIn.addEventListener('click', function(e) {
         e.preventDefault();
-        verifySignIn();
-        console.log("YEET");
+        verifySignIn(apiUrl);
     })
+
 }
 
 // Creates the login button.
@@ -98,7 +101,7 @@ function createInputTextbox(itemName) {
     element.id = "login-" + itemName;
     element.classList.add("modal-textbox");
     let errorText = document.createElement("p");
-    let text = document.createTextNode("Authentication Failed");
+    let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
     errorText.id = "login-error-" + itemName;
@@ -131,20 +134,70 @@ function createSignInBTN() {
     return btnDiv;
 }
 
-function verifySignIn() {
+function verifySignIn(apiUrl) {
     // Gets values stored for username and password.
     const username = document.getElementById("login-username");
     const password = document.getElementById("login-password");
 
+    let authenticate = 1;
+
     if (username.value === '') {
-        username.classList.toggle("textbox-glow");
         let element = document.getElementById("login-error-username");
-        element.classList.toggle("textbox-error");
+        element.innerText = "Username must have more than 0 characters";
+        authenticate = 0;
     } else if (password.value === '') {
-        password.classList.toggle("textbox-glow");
         let element = document.getElementById("login-error-password");
-        element.classList.toggle("textbox-error");
+        element.innerText = "Password must have more than 0 characters";
+        authenticate = 0;
     }
+
+    if (authenticate == 0) return;
+    document.getElementById("login-error-username").innerText = "";
+    document.getElementById("login-error-password").innerText = "";
+
+    loginUser(username.value, password.value, apiUrl);
+
+}
+
+// Calls the backend to check if username and password is valid.
+function loginUser(username, password, apiUrl) {
+    // Holds the parameters needed to call backend for login.
+    const payload = {
+        username: username,
+        password: password
+    }
+
+    // Compiles all the parameters.
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    }
+
+    // Is the URL for fetching login.
+    let loginAuth = apiUrl + "/auth/login";
+
+    // Attempts to login through the backend and handles any errors that return.
+    fetch(loginAuth, options)
+        .then(response => errors(response))
+        .then(response => response.json())
+        .then(response => {
+            console.log(response.token);
+        })
+        .catch(event => {
+            console.log(event);
+        });
+}
+
+// Handles any errors sent back from backend.
+function errors(response) {
+    // If there is an error.
+    if (!response.ok) {
+        throw (response.status);
+    }
+    return response;
 }
 
 export default genLogin;

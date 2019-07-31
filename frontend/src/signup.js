@@ -1,7 +1,7 @@
 // Written by Nikil Singh (z5209322)
 
 // Generates the signup button.
-function genSignup() {
+function genSignup(apiUrl) {
     const signup = createSignup();
     createSignupModal();
     let modal = document.getElementById("signup-modal");
@@ -21,8 +21,7 @@ function genSignup() {
     // Event listener for register in button on signup form modal.
     register.addEventListener('click', function(e) {
         e.preventDefault();
-        verifyRegister();
-        console.log("YEET");
+        verifyRegister(apiUrl);
     })
 }
 
@@ -60,6 +59,8 @@ function createSignupModal() {
     form.id = "signup-form";
     let username = createInputTextbox("username");
     let password = createInputTextbox("password");
+    let email = createInputTextbox("email");
+    let name = createInputTextbox("name");
     let registerBTN = createRegisterBTN();
 
     // Creates the close button.
@@ -75,6 +76,8 @@ function createSignupModal() {
     contentBox.appendChild(headerElement);
     contentBox.appendChild(username);
     contentBox.appendChild(password);
+    contentBox.appendChild(email);
+    contentBox.appendChild(name);
     contentBox.appendChild(registerBTN);
     box.appendChild(contentBox);
     form.appendChild(box)
@@ -98,7 +101,7 @@ function createInputTextbox(itemName) {
     element.id = "signup-" + itemName;
     element.classList.add("modal-textbox");
     let errorText = document.createElement("p");
-    let text = document.createTextNode("Authentication Failed");
+    let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
     errorText.id = "signup-error-" + itemName;
@@ -106,8 +109,12 @@ function createInputTextbox(itemName) {
     if (itemName == "password") {
         element.placeholder = "Password";
         element.type = "password";
-    } else {
+    } else if (itemName == "username") {
         element.placeholder = "Username";
+    } else if (itemName == "email") {
+        element.placeholder = "Email";
+    } else {
+        element.placeholder = "Name";
     }
 
     // Creates div for element so they can stack.
@@ -131,20 +138,84 @@ function createRegisterBTN() {
     return btnDiv;
 }
 
-function verifyRegister() {
+function verifyRegister(apiUrl) {
     // Gets values stored for username and password.
     const username = document.getElementById("signup-username");
     const password = document.getElementById("signup-password");
+    const email = document.getElementById("signup-email");
+    const name = document.getElementById("signup-name");
+
+    let authenticate = 1;
 
     if (username.value === '') {
-        username.classList.toggle("textbox-glow");
         let element = document.getElementById("signup-error-username");
-        element.classList.toggle("textbox-error");
+        element.innerText = "Username must have more than 0 characters";
+        authenticate = 0;
     } else if (password.value === '') {
-        password.classList.toggle("textbox-glow");
         let element = document.getElementById("signup-error-password");
-        element.classList.toggle("textbox-error");
+        element.innerText = "Password must have more than 0 characters";
+        authenticate = 0;
+    } else if (email.value === '') {
+        let element = document.getElementById("signup-error-email");
+        element.innerText = "Email must have more than 0 characters";
+        authenticate = 0;
+    } else if (name.value === '') {
+        let element = document.getElementById("signup-error-name");
+        element.innerText = "Name must have more than 0 characters";
+        authenticate = 0;
     }
+
+    if (authenticate == 0) return;
+    document.getElementById("signup-error-username").innerText = "";
+    document.getElementById("signup-error-password").innerText = "";
+    document.getElementById("signup-error-email").innerText = "";
+    document.getElementById("signup-error-name").innerText = "";
+
+    signupUser(username.value, password.value, email.value, name.value, apiUrl);
+}
+
+// Call the backend to signup the user.
+function signupUser(username, password, email, name, apiUrl) {
+    // Holds the parameters needed to call backend for signup.
+    const payload = {
+        username: username,
+        password: password,
+        email: email,
+        name: name
+    }
+
+    // Compiles all the parameters.
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    }
+
+    // Is the URL for fetching signup.
+    let signupAuth = apiUrl + "/auth/signup"
+
+    // Attempts to signup through the backend and handles any errors that return.
+    fetch(signupAuth, options)
+        .then(response => errors(response))
+        .then(response => response.json())
+        .then(response => {
+            console.log(response);
+        })
+        .catch(event => {
+            console.log(event.message);
+        });
+}
+
+// Handles any errors sent back from backend.
+function errors(response) {
+    if (response.status == "400") {
+        // Malinformed request.
+    } else if (response.status == "409") {
+        // Username Taken.
+    }
+    return response;
 }
 
 export default genSignup;
