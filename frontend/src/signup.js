@@ -8,6 +8,10 @@ function genSignup(apiUrl) {
     const close = document.getElementById("signup-modal-close");
     const register = document.getElementById("signup-submit");
 
+    if (localStorage.getItem("token") === null) {
+        signup.classList.toggle("button-display");
+    }
+
     // Event listener for signup button.
     signup.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
@@ -32,7 +36,7 @@ function createSignup() {
     btn.id = "signup-btn";
     btn.setAttribute("data-id-signup","");
     btn.appendChild(text);
-    btn.classList.add("button", "button-secondary", "nav-item");
+    btn.classList.add("button", "button-secondary", "nav-item", "button-display");
 
     // Appends signup button to list in header.
     let element = document.getElementById("signup-li");
@@ -219,7 +223,7 @@ function errors(response) {
 
 // Handles a failed signup.
 function failedSignup(error) {
-    
+
 }
 
 // Handles successful login.

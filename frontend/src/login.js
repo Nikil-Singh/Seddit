@@ -3,10 +3,23 @@
 // Generates the sign in button.
 function genLogin(apiUrl) {
     const login = createLogin();
+    const logout = createLogout();
     createLoginModal();
     let modal = document.getElementById("login-modal");
     const close = document.getElementById("login-modal-close");
     const signIn = document.getElementById("login-submit");
+
+    if (localStorage.getItem("token") === null) {
+        login.classList.toggle("button-display");
+    } else {
+        logout.classList.toggle("button-display");
+    }
+
+    // Event listener for logout button.
+    logout.addEventListener('click', function() {
+        localStorage.clear();
+        location.reload();
+    })
 
     // Event listener for login button.
     login.addEventListener('click', function() {
@@ -37,10 +50,26 @@ function createLogin() {
     btn.id = "login-btn";
     btn.setAttribute("data-id-login","");
     btn.appendChild(text);
-    btn.classList.add("button", "button-primary", "nav-item");
+    btn.classList.add("button", "button-primary", "nav-item", "button-display");
 
     // Appends login button to list in header.
     let element = document.getElementById("login-li");
+    element.appendChild(btn);
+
+    return btn;
+}
+
+// Creates the logout button.
+function createLogout() {
+    // Creates the button.
+    let btn = document.createElement("button");
+    let text = document.createTextNode("Logout");
+    btn.id = "logout-btn";
+    btn.appendChild(text);
+    btn.classList.add("button", "button-primary", "nav-item", "button-display");
+
+    // Appends login button to list in header.
+    let element = document.getElementById("logout-li");
     element.appendChild(btn);
 
     return btn;
@@ -216,6 +245,7 @@ function successfulLogin(data) {
     let modal = document.getElementById("login-modal");
     modal.classList.toggle("show-modal");
     localStorage.setItem("token", data.token);
+    console.log(data.token);
     location.reload();
 }
 

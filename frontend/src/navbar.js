@@ -21,11 +21,13 @@ function genNavBar(apiUrl) {
     let searchLi = genListItem("search");
     let loginLi = genListItem("login");
     let signupLi = genListItem("signup");
+    let logoutLi = genListItem("logout");
 
     // Appends search bar and buttons to unordered list.
     unorderedList.appendChild(searchLi);
     unorderedList.appendChild(loginLi);
     unorderedList.appendChild(signupLi);
+    unorderedList.appendChild(logoutLi);
 
     // Appends unorderedList to bar.
     bar.appendChild(unorderedList);

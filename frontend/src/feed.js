@@ -1,5 +1,8 @@
 // Written by Nikil Singh (z5209322)
 
+// Imports in other JS scripts
+import showUpvotes from './upvotes.js'
+
 function genFeed(apiUrl) {
     let main = document.createElement("main");
     main.role = "main";
@@ -185,7 +188,10 @@ function getPostsPrivate(apiUrl, uList) {
                 let post = createPost(response.posts[i])
                 appendContent(post, uList);
             }
-            if (response.post.length == 0) emptyFeed();
+            if (response.posts.length == 0) {
+                let post = emptyFeed();
+                appendContent(post, uList);
+            }
         });
 }
 
