@@ -1,5 +1,8 @@
 // Written by Nikil Singh (z5209322)
 
+// Imported scripts.
+import refreshPage from './refresh.js'
+
 // Generates the sign in button.
 function genLogin(apiUrl) {
     const login = createLogin();
@@ -18,7 +21,8 @@ function genLogin(apiUrl) {
     // Event listener for logout button.
     logout.addEventListener('click', function() {
         localStorage.clear();
-        location.reload();
+        refreshPage(apiUrl, "nav");
+        refreshPage(apiUrl, "feed");
     })
 
     // Event listener for login button.
@@ -212,7 +216,7 @@ function loginUser(username, password, apiUrl) {
         .then(response => errors(response))
         .then(data => data.json())
         .then(data => {
-            successfulLogin(data);
+            successfulLogin(data, apiUrl);
         })
         .catch(error => {
             failedLogin(error);
@@ -232,7 +236,6 @@ function errors(response) {
 function failedLogin(error) {
     let usernameError = document.getElementById("login-error-username");
     document.getElementById("login-error-password").innerText = "";
-    console.log(error);
     if (error.status == "403") {
         usernameError.innerText = "Invalid username or password";
     } else if (error.status == "400") {
@@ -241,12 +244,12 @@ function failedLogin(error) {
 }
 
 // Handles a successful login.
-function successfulLogin(data) {
+function successfulLogin(data, apiUrl) {
     let modal = document.getElementById("login-modal");
     modal.classList.toggle("show-modal");
     localStorage.setItem("token", data.token);
-    console.log(data.token);
-    location.reload();
+    refreshPage(apiUrl, "nav");
+    refreshPage(apiUrl, "feed");
 }
 
 export default genLogin;

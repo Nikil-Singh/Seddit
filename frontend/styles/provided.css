@@ -194,3 +194,28 @@ footer > * {
 .button-display {
     visibility: hidden;
 }
+
+.post-votes {
+    text-align-last: center;
+    margin-block-start: 1px;
+    margin-block-end: 1px;
+}
+
+.post-arrow {
+    font-weight: 1000;
+}
+
+.post-arrow:hover {
+    color: lightblue;
+    transition: 0.4s;
+}
+
+.post-arrow-click {
+    color: lightblue;
+}
+
+.post-image {
+    padding: 5px 1px;
+    width: 95%;
+    height: auto;
+}

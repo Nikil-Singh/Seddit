@@ -1,5 +1,8 @@
 // Written by Nikil Singh (z5209322)
 
+// Imported scripts.
+import refreshPage from './refresh.js'
+
 // Generates the signup button.
 function genSignup(apiUrl) {
     const signup = createSignup();
@@ -20,6 +23,8 @@ function genSignup(apiUrl) {
     // Event listener for closing register form modal.
     close.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
+        // Gets rid of any error messages.
+        document.getElementById("login-error-username").innerText = "";
     })
 
     // Event listener for register in button on signup form modal.
@@ -203,12 +208,12 @@ function signupUser(username, password, email, name, apiUrl) {
     // Attempts to signup through the backend and handles any errors that return.
     fetch(signupAuth, options)
         .then(response => errors(response))
-        .then(response => response.json())
-        .then(response => {
-            console.log(response);
+        .then(data => data.json())
+        .then(data => {
+            successfulSignup(data, apiUrl);
         })
-        .catch(event => {
-            console.log(event.message);
+        .catch(error => {
+            failedSignup(error);
         });
 }
 
@@ -223,12 +228,20 @@ function errors(response) {
 
 // Handles a failed signup.
 function failedSignup(error) {
-
+    let usernameError = document.getElementById("signup-error-username");
+    document.getElementById("login-error-password").innerText = "";
+    if (error.status == "409") {
+        usernameError.innerText = "Username already taken";
+    }
 }
 
-// Handles successful login.
-function successfulSignup(data) {
-
+// Handles successful signup.
+function successfulSignup(data, apiUrl) {
+    let modal = document.getElementById("signup-modal");
+    modal.classList.toggle("show-modal");
+    localStorage.setItem("token", data.token);
+    refreshPage(apiUrl, "nav");
+    refreshPage(apiUrl, "feed");
 }
 
 export default genSignup;

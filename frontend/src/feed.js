@@ -6,6 +6,7 @@ import showUpvotes from './upvotes.js'
 function genFeed(apiUrl) {
     let main = document.createElement("main");
     main.role = "main";
+    main.id = "main";
     let uList = document.createElement("ul");
     uList.id = "feed";
     uList.setAttribute("data-id-feet","");
@@ -61,14 +62,22 @@ function createPost(postData) {
     let list = document.createElement("li");
     list.classList.add("post");
     list.setAttribute("data-id-feed","");
+    list.id = "post-" + postData.id;
 
     // Holds the upvotes for post.
     let votes = document.createElement("div");
     votes.classList.add("vote");
     votes.setAttribute("data-id-upvotes","");
+    let upVoteArrow = document.createElement("p");
+    upVoteArrow.id = "upVoteArrow-" + postData.id;
+    upVoteArrow.innerText = "⬆";
+    upVoteArrow.classList.add("post-votes", "post-arrow", "post-arrow-click");
+    upVoteArrow.classList.toggle("post-arrow-click");
     let numVotes = document.createElement("p");
+    numVotes.classList.add("post-votes");
     let voteText = document.createTextNode(postData.meta.upvotes.length);
     numVotes.appendChild(voteText);
+    votes.appendChild(upVoteArrow);
     votes.appendChild(numVotes);
 
     // Creates div to hold content.
@@ -97,7 +106,8 @@ function createPost(postData) {
     //Holds any images for the post.
     if (postData.image != null) {
         image = document.createElement("img")
-        image.src = postData.image;
+        image.src = "data:image/png;base64," + postData.image;
+        image.classList.add("post-image");
     }
 
     // Holds author for post.
@@ -110,7 +120,7 @@ function createPost(postData) {
     // Holds the number of comments on post.
     let comments = document.createElement("p");
     let numComments = document
-        .createTextNode(postData.comments.length + " comments");
+        .createTextNode(postData.comments.length + " Comments");
     comments.appendChild(numComments);
 
     // Appends all elements to list.
