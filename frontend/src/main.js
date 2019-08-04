@@ -14,7 +14,8 @@ import genFeed from './feed.js'
 // this will allow us to verify your apps behaviour with
 // different datasets.
 function initApp(apiUrl) {
-    localStorage.clear();
+    //localStorage.clear();
+    localStorage.setItem("api", apiUrl);
     // Initialises the page.
     genNavBar(apiUrl);
     genLogin(apiUrl);

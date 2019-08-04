@@ -3,29 +3,39 @@
 // Imported scripts.
 import refreshPage from './refresh.js'
 
-// Generates the sign in button.
+// Generates the login and logout buttons.
 function genLogin(apiUrl) {
+    // Generates the login and gets the button element for it.
     const login = createLogin();
+    // Generates the logout and gets the button element for it.
     const logout = createLogout();
+    // Creates the modal for displaying the login form.
     createLoginModal();
-    let modal = document.getElementById("login-modal");
+
+    // Gets all clickable elements from login modal form.
+    const modal = document.getElementById("login-modal");
     const close = document.getElementById("login-modal-close");
     const signIn = document.getElementById("login-submit");
 
+    // Checks if a token is stored in local storage (checks if user is logged
+    // in and then displays required buttons.)
     if (localStorage.getItem("token") === null) {
         login.classList.toggle("button-display");
     } else {
         logout.classList.toggle("button-display");
     }
 
-    // Event listener for logout button.
+    // Event listener for if logout button is clicked.
     logout.addEventListener('click', function() {
+        // Clears token from local storage since user is logging out.
         localStorage.clear();
+        // Refreshes the navigation bar.
         refreshPage(apiUrl, "nav");
+        // Refreshes the feed.
         refreshPage(apiUrl, "feed");
     })
 
-    // Event listener for login button.
+    // Event listener for if login button is clicked.
     login.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
     });
@@ -40,7 +50,9 @@ function genLogin(apiUrl) {
 
     // Event listener for sign in button on login form modal.
     signIn.addEventListener('click', function(e) {
+        // Prevents page from refreshing if clicked.
         e.preventDefault();
+        // Checks if sign in data is correct.
         verifySignIn(apiUrl);
     })
 
@@ -48,7 +60,7 @@ function genLogin(apiUrl) {
 
 // Creates the login button.
 function createLogin() {
-    // Creates the button.
+    // Creates the button and sets required attributes.
     let btn = document.createElement("button");
     let text = document.createTextNode("Sign In");
     btn.id = "login-btn";
@@ -65,7 +77,7 @@ function createLogin() {
 
 // Creates the logout button.
 function createLogout() {
-    // Creates the button.
+    // Creates the button and sets required attributes..
     let btn = document.createElement("button");
     let text = document.createTextNode("Logout");
     btn.id = "logout-btn";
@@ -81,12 +93,12 @@ function createLogout() {
 
 // Creates the modal for login form.
 function createLoginModal() {
-    // Creates the main modal box.
+    // Creates the main modal box and sets required attributes.
     let box = document.createElement("div");
     box.classList.add("modal");
     box.id = "login-modal";
 
-    // Creates the section wihin modal with actual content.
+    // Creates the section wihin modal with actual interactable content.
     let contentBox = document.createElement("div");
     contentBox.classList.add("modal-content");
     contentBox.id = "login-content-modal";
@@ -96,6 +108,8 @@ function createLoginModal() {
     form.id = "login-form";
     let username = createInputTextbox("username");
     let password = createInputTextbox("password");
+
+    // Creates the sign in button.
     let signInBTN = createSignInBTN();
 
     // Creates the close button.
@@ -106,7 +120,7 @@ function createLoginModal() {
     let text = document.createTextNode("Sign In");
     headerElement.appendChild(text);
 
-    // Appends required elements to different elements.
+    // Appends required elements to different elements to form modal.
     contentBox.appendChild(closeBTN);
     contentBox.appendChild(headerElement);
     contentBox.appendChild(username);
@@ -118,7 +132,7 @@ function createLoginModal() {
     element.appendChild(form);
 }
 
-// Creates the close button for the login modal.
+// Creates the close button for the login modal and sets required attributes.
 function createCloseButton() {
     let closeBTN = document.createElement("span");
     let closeSym = document.createTextNode("x");
@@ -128,8 +142,9 @@ function createCloseButton() {
     return closeBTN
 }
 
-// Creates the textbox inputs for the modal.
+// Creates the textbox inputs for the modal and sets required attributes..
 function createInputTextbox(itemName) {
+    // Creates textbox with section for error messages.
     let element = document.createElement("input");
     element.id = "login-" + itemName;
     element.classList.add("modal-textbox");
@@ -138,6 +153,7 @@ function createInputTextbox(itemName) {
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
     errorText.id = "login-error-" + itemName;
+
     // Determines placeholder text and type based on item name.
     if (itemName == "password") {
         element.placeholder = "Password";
@@ -154,7 +170,7 @@ function createInputTextbox(itemName) {
     return div;
 }
 
-// Creats the sign in button for the modal.
+// Creates the sign in button for the modal and sets required attributes..
 function createSignInBTN() {
     let button = document.createElement("button");
     let btnDiv = document.createElement("div");
@@ -167,13 +183,16 @@ function createSignInBTN() {
     return btnDiv;
 }
 
+// Checks if login details are correct and display error messages if needed.
 function verifySignIn(apiUrl, token) {
     // Gets values stored for username and password.
     const username = document.getElementById("login-username");
     const password = document.getElementById("login-password");
 
+    // Variable to determine if any errors were found.
     let authenticate = 1;
 
+    // Checks if no username or password were given in form.
     if (username.value === '') {
         let element = document.getElementById("login-error-username");
         element.innerText = "Username must have more than 0 characters";
@@ -184,7 +203,10 @@ function verifySignIn(apiUrl, token) {
         authenticate = 0;
     }
 
+    // Returns if there are any errors.
     if (authenticate == 0) return;
+
+    // Gets rid of prior error messages if there no more errors.
     document.getElementById("login-error-username").innerText = "";
     document.getElementById("login-error-password").innerText = "";
 
@@ -216,9 +238,11 @@ function loginUser(username, password, apiUrl) {
         .then(response => errors(response))
         .then(data => data.json())
         .then(data => {
+            // Logs the user in.
             successfulLogin(data, apiUrl);
         })
         .catch(error => {
+            // Lets user attempt to login in again.
             failedLogin(error);
         });
 }
@@ -229,15 +253,20 @@ function errors(response) {
     if (!response.ok) {
         throw (response);
     }
+    // Otherwise return the response.
     return response;
 }
 
-// Handles a failed login.
+// Handles a failed login along with errors.
 function failedLogin(error) {
+    // First removes any prior error messages.
     let usernameError = document.getElementById("login-error-username");
     document.getElementById("login-error-password").innerText = "";
+
+    // Checks if error status was 403, so invalid username or password.
     if (error.status == "403") {
         usernameError.innerText = "Invalid username or password";
+    // Checks if error status was 400, so missing username or password.
     } else if (error.status == "400") {
         usernameError.innerText = "Missing username or password";
     }
@@ -245,9 +274,14 @@ function failedLogin(error) {
 
 // Handles a successful login.
 function successfulLogin(data, apiUrl) {
+    // Closes modal.
     let modal = document.getElementById("login-modal");
     modal.classList.toggle("show-modal");
+
+    // Saves token for user in local storage.
     localStorage.setItem("token", data.token);
+
+    // Refreshes the navigation bar and feed.
     refreshPage(apiUrl, "nav");
     refreshPage(apiUrl, "feed");
 }

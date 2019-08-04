@@ -3,4 +3,6 @@ Date         Start   End     Comment
 28/07/19     11:00   13:00   Implemented a navigation bar with logo, and buttons.
 28/07/19     14:00   16:00   Created modal forms for login and signup.
 28/07/19     17:30   19:00   Created the template for the feed and individual posts.
-  
+30/07/19     15:00   18:00   Feed now displays public posts, and made improvements to the UI.
+31/07/19     17:00   19:00   Finished implementing login and implemented signed in posts.
+01/08/19     09:00   10:00   Implemented sign out.
