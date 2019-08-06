@@ -125,7 +125,7 @@ function createFeedHeader() {
 
 // Creates required HTML for one post.
 function createPost(postData) {
-    console.log(postData);
+    //console.log(postData);
     // Creates the list to hold elements of post.
     let list = document.createElement("li");
     list.classList.add("post");

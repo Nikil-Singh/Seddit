@@ -33,6 +33,9 @@ function createPostModal() {
     let text = createInputTextbox("text");
     let subseddit = createInputTextbox("subseddit");
 
+    // Creates option to upload image file.
+    let image = createImageSubmit();
+
     // Creates the sign in button.
     let postBTN = createPostBTN();
 
@@ -50,6 +53,7 @@ function createPostModal() {
     contentBox.appendChild(title);
     contentBox.appendChild(text);
     contentBox.appendChild(subseddit);
+    contentBox.appendChild(image);
     contentBox.appendChild(postBTN);
     box.appendChild(contentBox);
     form.appendChild(box)
@@ -105,6 +109,29 @@ function createCloseButton() {
     return closeBTN
 }
 
+// Creates a div to hold the inputting images.
+function createImageSubmit() {
+    let div = document.createElement("div");
+
+    let image = document.createElement("INPUT");
+    image.setAttribute("type", "file");
+    image.id = "post-image";
+
+    let imageText = document.createElement("p");
+    imageText.innerText = "(Optional) Select Image to Upload"
+
+    let errorText = document.createElement("p");
+    let text = document.createTextNode("");
+    errorText.classList.add("textbox-error");
+    errorText.appendChild(text);
+    errorText.id = "post-error-image";
+
+    div.appendChild(imageText);
+    div.appendChild(image);
+    div.appendChild(errorText);
+    return div;
+}
+
 // Checks if all the post data are correct and then display error messages if
 // needed.
 function verifyPost() {
@@ -112,10 +139,10 @@ function verifyPost() {
     const title = document.getElementById("post-title");
     const text = document.getElementById("post-text");
     const subseddit = document.getElementById("post-subseddit");
+    const image = document.getElementById("post-image");
 
     // Variable to determine if any errors were found.
     let authenticate = 1;
-
     // Clears any prior error messages on modal.
     clearErrorMessages();
 
@@ -139,8 +166,23 @@ function verifyPost() {
     // Clears any error messages left.
     clearErrorMessages();
 
-    // Uploads the post.
-    uploadPost(title.value, text.value, subseddit.value);
+    // If there is an image.
+    if (image.value != "") {
+        // Gets the file
+        let file = document.querySelector('input[type=file]').files[0];
+        // Sets up the reader.
+        let reader = new FileReader();
+        // Converts the file into base64.
+        reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            // Extracts the base64 string of image.
+            let imageResult = reader.result.replace("data:image/png;base64,", "");
+            uploadPost(title.value, text.value, subseddit.value, imageResult);
+        };
+    // If there is no image.
+    } else {
+        uploadPost(title.value, text.value, subseddit.value, "");
+    }
 }
 
 // Gets rid of prior error messages if there no more errors.
@@ -148,13 +190,17 @@ function clearErrorMessages() {
     document.getElementById("post-error-title").innerText = "";
     document.getElementById("post-error-text").innerText = "";
     document.getElementById("post-error-subseddit").innerText = "";
+    document.getElementById("post-error-image").innerText = "";
 }
 
 // Calls the backend to check if post data is valid and then uploads it.
-function uploadPost(title, text, subseddit) {
+function uploadPost(title, text, subseddit, imageResult) {
     // Holds the parameters needed to call backend for login.
     const payload = {
-
+        title: title,
+        text: text,
+        subseddit: subseddit,
+        image: imageResult
     }
 
     // Sets options to get post details.
@@ -167,6 +213,45 @@ function uploadPost(title, text, subseddit) {
         },
         body: JSON.stringify(payload)
     }
+
+    // The url for fetching post to post.
+    let post = localStorage.getItem("api") + "/post/";
+    fetch(post, options)
+        .then(response => errors(response))
+        .then(response => response.json())
+        .then(data => {
+            // Refreshes feed and resets post modal.
+            successfulPost()
+        })
+        .catch(error => {
+            // Lets user try to reupload post again.
+            failedPost(error);
+        });
+
 }
+
+// Handles any errors sent back from backend.
+function errors(response) {
+    // If there is an error.
+    if (!response.ok) {
+        throw (response);
+    }
+    // Otherwise return the response.
+    return response;
+}
+
+// Handles a successful post.
+function successfulPost() {
+    refreshPage("post");
+    refreshPage("feed");
+    document.getElementById("post-modal").classList.toggle("show-modal");
+}
+
+// Handles a failed post along with errors.
+function failedPost(error) {
+    let imageError = document.getElementById("post-error-image");
+    imageError.innerText = "Malformed Request / Image could not be processed";
+}
+
 
 export default genPost;

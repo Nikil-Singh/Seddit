@@ -20,6 +20,8 @@ function refreshPage(item) {
     // Checks element to refresh is login and signup modal.
     } else if (item == "login/signup") {
         refreshLoginSignup();
+    } else if (item == "post") {
+        refreshPost();
     }
 }
 
@@ -94,6 +96,14 @@ function refreshLoginSignup() {
     document.getElementById("signup-password").value = "";
     document.getElementById("signup-email").value = "";
     document.getElementById("signup-name").value = "";
+}
+
+// Refreshes the post modal by setting value of text boxes to be empty strings.
+function refreshPost() {
+    document.getElementById("post-title").innerText = "";
+    document.getElementById("post-text").innerText = "";
+    document.getElementById("post-subseddit").innerText = "";
+    document.getElementById("post-image").innerText = "";
 }
 
 export default refreshPage;
