@@ -168,17 +168,7 @@ function verifyPost() {
 
     // If there is an image.
     if (image.value != "") {
-        // Gets the file
-        let file = document.querySelector('input[type=file]').files[0];
-        // Sets up the reader.
-        let reader = new FileReader();
-        // Converts the file into base64.
-        reader.readAsDataURL(file);
-        reader.onload = function(e) {
-            // Extracts the base64 string of image.
-            let imageResult = reader.result.replace("data:image/png;base64,", "");
-            uploadPost(title.value, text.value, subseddit.value, imageResult);
-        };
+        uploadPost(title.value, text.value, subseddit.value, getImage());
     // If there is no image.
     } else {
         uploadPost(title.value, text.value, subseddit.value, "");
@@ -193,9 +183,45 @@ function clearErrorMessages() {
     document.getElementById("post-error-image").innerText = "";
 }
 
+async function getImage() {
+    // Gets the file
+    //document.querySelector('input[type=file]').files[0];
+    /*
+    return document.querySelector('input[type=file]').files[0]
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+            // Sets up the reader.
+            let reader = new FileReader();
+            // Converts the file into base64.
+            reader.onloadend = () => resolve(reader.result)
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        }));
+    */
+    let file = document.querySelector('input[type=file]').files[0];
+    let reader = new FileReader();
+    let imageResult = "";
+    reader.readAsDataURL(file);
+    reader.onload = async function(e) {
+        // Extracts the base64 string of image.
+        imageResult = reader.result.replace("data:image/png;base64,", "");
+        await sleep(500);
+    };
+    await sleep(500);
+    return imageResult;
+}
+
+// Sleeps till function has resolved.
+function sleep(time) {
+    return new Promise((resolve, reject) => {
+        setTimeout(function(){resolve(time);}, time);
+    });
+}
+
 // Calls the backend to check if post data is valid and then uploads it.
 function uploadPost(title, text, subseddit, imageResult) {
     // Holds the parameters needed to call backend for login.
+    console.log(imageResult);
     const payload = {
         title: title,
         text: text,

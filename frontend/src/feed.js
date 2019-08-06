@@ -4,6 +4,7 @@
 import genUpvotes from './upvotes.js'
 import genComments from './comments.js'
 import genPost from './post.js'
+import genProfile from './profile.js'
 
 // Generates the feed.
 function genFeed() {
@@ -12,6 +13,7 @@ function genFeed() {
 
     // If user is logged in.
     if (localStorage.getItem("token") !== null) {
+
         // Gets all clickable elements from feed.
         const closeUpvote = document.getElementById("upvotes-modal-close");
         const upvoteModal = document.getElementById("upvotes-modal");
@@ -21,6 +23,7 @@ function genFeed() {
         const closePost = document.getElementById("post-modal-close");
         const postBTN = document.getElementById("post-open-modal");
         const postSubmitBTN = document.getElementById("post-submit");
+
         // Event listener for closing upvotes modal.
         closeUpvote.addEventListener('click', function() {
             upvoteModal.classList.toggle("show-modal");
@@ -80,11 +83,10 @@ function createFeed() {
         // Creates a modal to show who upvoted on which post.
         genUpvotes("generate", -1);
         // Creates a modal to show who commented on which post.
-        genComments("generate", -1)
+        genComments("generate", -1);
         // Creates a modal form for making a post.
-        genPost("generate", -1)
+        genPost("generate", -1);
     }
-
 
     // Appends required elements to other elements to generate the feed.
     main.appendChild(uList);
@@ -266,7 +268,6 @@ function getPostsPublic(uList) {
     fetch(publicPost, options)
         .then(response => response.json())
         .then(response => {
-            console.log(response);
             // Cycles through all the posts and adds them to the page.
             for (let i = 0; i < response.posts.length; i++) {
                 let post = createPost(response.posts[i])

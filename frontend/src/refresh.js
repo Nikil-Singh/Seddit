@@ -20,8 +20,12 @@ function refreshPage(item) {
     // Checks element to refresh is login and signup modal.
     } else if (item == "login/signup") {
         refreshLoginSignup();
+    // Checks element to refresh is the post form modal.
     } else if (item == "post") {
         refreshPost();
+    // Checks element to refresh is profile modal.
+    } else if (item == "profile") {
+        refreshProfile();
     }
 }
 
@@ -43,11 +47,13 @@ function refreshNav() {
     let login = document.getElementById("login-btn");
     let signup = document.getElementById("signup-btn");
     let logout = document.getElementById("logout-btn");
+    let profile = document.getElementById("profile-view");
 
     // Changes visibility of the following buttons.
     login.classList.toggle("button-display");
     signup.classList.toggle("button-display");
     logout.classList.toggle("button-display");
+    profile.classList.toggle("button-display");
 }
 
 // Refreshes the upvote modal by removing previous upvotes on modal.
@@ -100,10 +106,19 @@ function refreshLoginSignup() {
 
 // Refreshes the post modal by setting value of text boxes to be empty strings.
 function refreshPost() {
-    document.getElementById("post-title").innerText = "";
-    document.getElementById("post-text").innerText = "";
-    document.getElementById("post-subseddit").innerText = "";
-    document.getElementById("post-image").innerText = "";
+    document.getElementById("post-title").value = "";
+    document.getElementById("post-text").value = "";
+    document.getElementById("post-subseddit").value = "";
+    document.getElementById("post-image").value = "";
 }
 
+// Refreshes the profile modal of all previous data.
+function refreshProfile() {
+    document.getElementById("profile-username").innerText = "";
+    document.getElementById("profile-name").innerText = "";
+    document.getElementById("profile-numPosts").innerText = "";
+    document.getElementById("profile-followers").innerText = "";
+    document.getElementById("profile-following").innerText = "";
+    document.getElementById("profile-totalUpvotes").innerText = "";
+}
 export default refreshPage;

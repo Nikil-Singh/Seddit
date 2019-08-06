@@ -249,3 +249,11 @@ footer > * {
 .comment-list {
     padding-inline-start: 5px;
 }
+
+.profile-attributes {
+    display: inline;
+}
+
+.profile-data {
+    text-align-last: right;
+}

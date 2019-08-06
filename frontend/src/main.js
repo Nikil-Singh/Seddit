@@ -9,6 +9,7 @@ import genLogin from './login.js'
 import genSignup from './signup.js'
 import genNavBar from './navbar.js'
 import genFeed from './feed.js'
+import genProfile from './profile.js'
 
 // your app must take an apiUrl as an argument --
 // this will allow us to verify your apps behaviour with
@@ -17,10 +18,11 @@ function initApp(apiUrl) {
     //localStorage.clear();
     localStorage.setItem("api", apiUrl);
     // Initialises the page.
-    genNavBar(apiUrl);
-    genLogin(apiUrl);
-    genSignup(apiUrl);
-    genFeed(apiUrl);
+    genNavBar();
+    genProfile();
+    genLogin();
+    genSignup();
+    genFeed();
 }
 
 export default initApp;

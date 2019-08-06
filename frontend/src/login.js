@@ -16,6 +16,7 @@ function genLogin() {
     const modal = document.getElementById("login-modal");
     const close = document.getElementById("login-modal-close");
     const signIn = document.getElementById("login-submit");
+    const profile = document.getElementById("profile-view");
 
     // Checks if a token is stored in local storage (checks if user is logged
     // in and then displays required buttons.)
