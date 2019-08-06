@@ -38,7 +38,7 @@ function refreshFeed() {
     root.removeChild(main);
 
     // Updates the feed.
-    genFeed();
+    genFeed("generate");
 }
 
 // Refreshes the navigation bar, by showing logout and hiding signup and login.

@@ -7,9 +7,14 @@ import genPost from './post.js'
 import genProfile from './profile.js'
 
 // Generates the feed.
-function genFeed() {
-    // Creates the feed.
-    createFeed();
+function genFeed(item) {
+    if (item == "generate") {
+        // Creates the feed.
+        createFeed();
+    } else if (item == "morePrivate") {
+        // Add more to the feed.
+        appendFeed();
+    }
 
     // If user is logged in.
     if (localStorage.getItem("token") !== null) {
@@ -42,15 +47,15 @@ function genFeed() {
         // Event listener for closing post modal.
         closePost.addEventListener('click', function() {
             postModal.classList.toggle("show-modal");
-            genPost("clearErrors", -1);
+            genPost("clearErrors");
         })
 
-        // Event listener for closing post modal.
+        // Event listener for checking submission of post in modal.
         postSubmitBTN.addEventListener('click', function(e) {
             // Prevents page from refreshing if clicked.
             e.preventDefault();
             // Checks if post data is correct.
-            genPost("makePost", -1);
+            genPost("makePost");
         })
     }
 }
@@ -80,12 +85,18 @@ function createFeed() {
     } else {
         // User is logged in, so display user specific feed.
         getPostsPrivate(uList);
-        // Creates a modal to show who upvoted on which post.
-        genUpvotes("generate", -1);
-        // Creates a modal to show who commented on which post.
-        genComments("generate", -1);
-        // Creates a modal form for making a post.
-        genPost("generate", -1);
+        if (document.getElementById("upvotes-modal") == null) {
+            // Creates a modal to show who upvoted on which post.
+            genUpvotes("generate", -1);
+        }
+        if (document.getElementById("comments-modal") == null) {
+            // Creates a modal to show who commented on which post.
+            genComments("generate", -1);
+        }
+        if (document.getElementById("post-modal") == null) {
+            // Creates a modal form for making a post.
+            genPost("generate");
+        }
     }
 
     // Appends required elements to other elements to generate the feed.
@@ -278,6 +289,13 @@ function getPostsPublic(uList) {
 
 // Gets posts for users logged in.
 function getPostsPrivate(uList) {
+    // Gets request for posts as string with p giving current post number and
+    // n being the number of posts to fetch following p.
+    let request = "?p=" + localStorage.getItem("currPost") + "&n=" + "5";
+    // Sets the current post to be 5 ahead.
+    let numPost = Number(localStorage.getItem("currPost")) + 5;
+    localStorage.setItem("currPost", numPost);
+
     // Sets options to get public posts.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -288,8 +306,8 @@ function getPostsPrivate(uList) {
         },
     };
 
-    // The url for accessing public posts.
-    let privatePost = localStorage.getItem("api") + "/user/feed";
+    // The url for accessing private posts.
+    let privatePost = localStorage.getItem("api") + "/user/feed" + request;
 
     // Fetches the actual posts, formats and displays them.
     fetch(privatePost, options)
@@ -364,5 +382,13 @@ function getDate(unixDate) {
     // Returns the timestamp in form time on date.
     return time + " on " + date;
 }
+
+// Appends to the current feed.
+function appendFeed() {
+    // Gets the list to append posts to.
+    let uList = document.getElementById("feed");
+    getPostsPrivate(uList);
+}
+
 
 export default genFeed;

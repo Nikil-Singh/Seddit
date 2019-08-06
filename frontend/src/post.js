@@ -4,7 +4,7 @@
 import refreshPage from './refresh.js'
 
 // Generates the post modal.
-function genPost(item, postID) {
+function genPost(item) {
     if (item == "generate") {
         createPostModal();
     } else if (item == "makePost") {
@@ -168,7 +168,7 @@ function verifyPost() {
 
     // If there is an image.
     if (image.value != "") {
-        uploadPost(title.value, text.value, subseddit.value, getImage());
+        getImage(title.value, text.value, subseddit.value);
     // If there is no image.
     } else {
         uploadPost(title.value, text.value, subseddit.value, "");
@@ -183,7 +183,7 @@ function clearErrorMessages() {
     document.getElementById("post-error-image").innerText = "";
 }
 
-async function getImage() {
+function getImage(title, text, subseddit) {
     // Gets the file
     //document.querySelector('input[type=file]').files[0];
     /*
@@ -202,13 +202,11 @@ async function getImage() {
     let reader = new FileReader();
     let imageResult = "";
     reader.readAsDataURL(file);
-    reader.onload = async function(e) {
+    reader.onload = function(e) {
         // Extracts the base64 string of image.
         imageResult = reader.result.replace("data:image/png;base64,", "");
-        await sleep(500);
+        uploadPost(title, text, subseddit, imageResult);
     };
-    await sleep(500);
-    return imageResult;
 }
 
 // Sleeps till function has resolved.
@@ -221,7 +219,6 @@ function sleep(time) {
 // Calls the backend to check if post data is valid and then uploads it.
 function uploadPost(title, text, subseddit, imageResult) {
     // Holds the parameters needed to call backend for login.
-    console.log(imageResult);
     const payload = {
         title: title,
         text: text,
@@ -268,9 +265,10 @@ function errors(response) {
 
 // Handles a successful post.
 function successfulPost() {
+    console.log("GETS HERE")
+    document.getElementById("post-modal").classList.toggle("show-modal");
     refreshPage("post");
     refreshPage("feed");
-    document.getElementById("post-modal").classList.toggle("show-modal");
 }
 
 // Handles a failed post along with errors.
