@@ -4,7 +4,7 @@
 import refreshPage from './refresh.js'
 
 // Generates the signup button.
-function genSignup(apiUrl) {
+function genSignup() {
     // Generates the signup and gets the button element for it.
     const signup = createSignup();
     // Creates the modal for displaying the signup form.
@@ -30,7 +30,7 @@ function genSignup(apiUrl) {
     close.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
         // Gets rid of any error messages.
-        document.getElementById("login-error-username").innerText = "";
+        clearErrorMessages()
     })
 
     // Event listener for register in button on signup form modal.
@@ -38,7 +38,7 @@ function genSignup(apiUrl) {
         // Prevents page from refreshing if clicked.
         e.preventDefault();
         // Checks if register details are correct.
-        verifyRegister(apiUrl);
+        verifyRegister();
     })
 }
 
@@ -161,7 +161,7 @@ function createRegisterBTN() {
 }
 
 // Checks if register details are correct and display error messages if needed.
-function verifyRegister(apiUrl) {
+function verifyRegister() {
     // Gets values stored for username and password.
     const username = document.getElementById("signup-username");
     const password = document.getElementById("signup-password");
@@ -170,6 +170,9 @@ function verifyRegister(apiUrl) {
 
     // Variable to determine if any errors were found.
     let authenticate = 1;
+
+    // Clears any prior error messages on modal.
+    clearErrorMessages();
 
     // Checks if username, password, email or name were not given in form.
     if (username.value === '') {
@@ -192,18 +195,22 @@ function verifyRegister(apiUrl) {
 
     // Returns if there are any errors.
     if (authenticate == 0) return;
+    // Clears any error messages left.
+    clearErrorMessages();
 
-    // Gets rid of prior error messages if there no more errors.
+    signupUser(username.value, password.value, email.value, name.value);
+}
+
+// Gets rid of prior error messages if there no more errors.
+function clearErrorMessages() {
     document.getElementById("signup-error-username").innerText = "";
     document.getElementById("signup-error-password").innerText = "";
     document.getElementById("signup-error-email").innerText = "";
     document.getElementById("signup-error-name").innerText = "";
-
-    signupUser(username.value, password.value, email.value, name.value, apiUrl);
 }
 
 // Call the check if the signup details for user are valid.
-function signupUser(username, password, email, name, apiUrl) {
+function signupUser(username, password, email, name) {
     // Holds the parameters needed to call backend for signup.
     const payload = {
         username: username,
@@ -222,7 +229,7 @@ function signupUser(username, password, email, name, apiUrl) {
     }
 
     // Is the URL for fetching signup.
-    let signupAuth = apiUrl + "/auth/signup"
+    let signupAuth = localStorage.getItem("api") + "/auth/signup"
 
     // Attempts to signup through the backend and handles any errors that return.
     fetch(signupAuth, options)
@@ -230,7 +237,7 @@ function signupUser(username, password, email, name, apiUrl) {
         .then(data => data.json())
         .then(data => {
             // Signs the user up.
-            successfulSignup(data, apiUrl);
+            successfulSignup(data);
         })
         .catch(error => {
             // Lets the user attempt to signup again.
@@ -260,7 +267,7 @@ function failedSignup(error) {
 }
 
 // Handles successful signup.
-function successfulSignup(data, apiUrl) {
+function successfulSignup(data) {
     // Closes modal.
     let modal = document.getElementById("signup-modal");
     modal.classList.toggle("show-modal");
@@ -268,9 +275,36 @@ function successfulSignup(data, apiUrl) {
     // Saves token for user in local storage.
     localStorage.setItem("token", data.token);
 
-    // Refreshes the navigation bar and feed.
-    refreshPage(apiUrl, "nav");
-    refreshPage(apiUrl, "feed");
+    // Gets and saves current user ID in local storage.
+    getCurrentUserID();
+
+    // Refreshes the navigation bar, feed, login and signup modals.
+    refreshPage("nav");
+    refreshPage("feed");
+    refreshPage("login/signup");
 }
+
+// Gets the current user's ID.
+function getCurrentUserID() {
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
+    }
+
+    // The url for accessing user of particular ID.
+    let user = localStorage.getItem("api") + "/user/";
+    fetch(user, options)
+        .then(response => response.json())
+        .then(data => {
+            // Saves the user ID in local storage.
+            localStorage.setItem("userID", data.id);
+        });
+}
+
 
 export default genSignup;

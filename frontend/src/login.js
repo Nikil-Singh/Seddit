@@ -4,7 +4,7 @@
 import refreshPage from './refresh.js'
 
 // Generates the login and logout buttons.
-function genLogin(apiUrl) {
+function genLogin() {
     // Generates the login and gets the button element for it.
     const login = createLogin();
     // Generates the logout and gets the button element for it.
@@ -27,12 +27,14 @@ function genLogin(apiUrl) {
 
     // Event listener for if logout button is clicked.
     logout.addEventListener('click', function() {
-        // Clears token from local storage since user is logging out.
-        localStorage.clear();
+        // Clears token and user ID from local storage since the user is
+        // logging out.
+        localStorage.removeItem("token");
+        localStorage.removeItem("userID");
         // Refreshes the navigation bar.
-        refreshPage(apiUrl, "nav");
+        refreshPage("nav");
         // Refreshes the feed.
-        refreshPage(apiUrl, "feed");
+        refreshPage("feed");
     })
 
     // Event listener for if login button is clicked.
@@ -44,8 +46,7 @@ function genLogin(apiUrl) {
     close.addEventListener('click', function() {
         modal.classList.toggle("show-modal");
         // Gets rid of any error messages.
-        document.getElementById("login-error-username").innerText = "";
-        document.getElementById("login-error-password").innerText = "";
+        clearErrorMessages();
     })
 
     // Event listener for sign in button on login form modal.
@@ -53,7 +54,7 @@ function genLogin(apiUrl) {
         // Prevents page from refreshing if clicked.
         e.preventDefault();
         // Checks if sign in data is correct.
-        verifySignIn(apiUrl);
+        verifySignIn();
     })
 
 }
@@ -142,7 +143,7 @@ function createCloseButton() {
     return closeBTN
 }
 
-// Creates the textbox inputs for the modal and sets required attributes..
+// Creates the textbox inputs for the modal and sets required attributes.
 function createInputTextbox(itemName) {
     // Creates textbox with section for error messages.
     let element = document.createElement("input");
@@ -184,13 +185,16 @@ function createSignInBTN() {
 }
 
 // Checks if login details are correct and display error messages if needed.
-function verifySignIn(apiUrl, token) {
+function verifySignIn(token) {
     // Gets values stored for username and password.
     const username = document.getElementById("login-username");
     const password = document.getElementById("login-password");
 
     // Variable to determine if any errors were found.
     let authenticate = 1;
+
+    // Clears any prior error messages on modal.
+    clearErrorMessages();
 
     // Checks if no username or password were given in form.
     if (username.value === '') {
@@ -205,16 +209,20 @@ function verifySignIn(apiUrl, token) {
 
     // Returns if there are any errors.
     if (authenticate == 0) return;
+    // Clears any error messages left.
+    clearErrorMessages();
 
-    // Gets rid of prior error messages if there no more errors.
+    return loginUser(username.value, password.value);
+}
+
+// Gets rid of prior error messages if there no more errors.
+function clearErrorMessages() {
     document.getElementById("login-error-username").innerText = "";
     document.getElementById("login-error-password").innerText = "";
-
-    return loginUser(username.value, password.value, apiUrl);
 }
 
 // Calls the backend to check if username and password is valid.
-function loginUser(username, password, apiUrl) {
+function loginUser(username, password) {
     // Holds the parameters needed to call backend for login.
     const payload = {
         username: username,
@@ -231,7 +239,7 @@ function loginUser(username, password, apiUrl) {
     }
 
     // Is the URL for fetching login.
-    let loginAuth = apiUrl + "/auth/login";
+    let loginAuth = localStorage.getItem("api") + "/auth/login";
 
     // Attempts to login through the backend and handles any errors that return.
     fetch(loginAuth, options)
@@ -239,7 +247,7 @@ function loginUser(username, password, apiUrl) {
         .then(data => data.json())
         .then(data => {
             // Logs the user in.
-            successfulLogin(data, apiUrl);
+            successfulLogin(data);
         })
         .catch(error => {
             // Lets user attempt to login in again.
@@ -273,7 +281,7 @@ function failedLogin(error) {
 }
 
 // Handles a successful login.
-function successfulLogin(data, apiUrl) {
+function successfulLogin(data) {
     // Closes modal.
     let modal = document.getElementById("login-modal");
     modal.classList.toggle("show-modal");
@@ -281,9 +289,35 @@ function successfulLogin(data, apiUrl) {
     // Saves token for user in local storage.
     localStorage.setItem("token", data.token);
 
-    // Refreshes the navigation bar and feed.
-    refreshPage(apiUrl, "nav");
-    refreshPage(apiUrl, "feed");
+    // Gets and saves current user ID in local storage.
+    getCurrentUserID();
+
+    // Refreshes the navigation bar, feed, login and signup modals.
+    refreshPage("nav");
+    refreshPage("feed");
+    refreshPage("login/signup");
+}
+
+// Gets the current user's ID.
+function getCurrentUserID() {
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
+    }
+
+    // The url for accessing user of particular ID.
+    let user = localStorage.getItem("api") + "/user/";
+    fetch(user, options)
+        .then(response => response.json())
+        .then(data => {
+            // Saves the user ID in local storage.
+            localStorage.setItem("userID", data.id);
+        });
 }
 
 export default genLogin;

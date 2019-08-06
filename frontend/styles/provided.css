@@ -211,11 +211,41 @@ footer > * {
 }
 
 .post-arrow-click {
-    color: lightblue;
+    color: blue;
 }
 
 .post-image {
     padding: 5px 1px;
     width: 95%;
     height: auto;
+}
+
+.upvotes-modal-list {
+    list-style-type: none;
+}
+
+.upvotes-number:hover {
+    text-decoration: underline;
+    color: lightblue;
+}
+
+.comments-modal-list {
+    list-style-type: none;
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+    background-color: lightgray;
+}
+
+.comments-modal-text {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
+.comments-number:hover {
+    text-decoration: underline;
+    color: lightblue;
+}
+
+.comment-list {
+    padding-inline-start: 5px;
 }

@@ -1,21 +1,20 @@
 // Written by Nikil Singh (z5209322)
 
+// Imported scripts.
+import refreshPage from './refresh.js'
+
 // Generates the upvotes modal.
 function genUpvotes(item, postID) {
     if (item == "generate") {
         createUpvotesModal();
     } else if (item == "showVotes") {
+        refreshPage("upvotes");
         showVotes(postID);
+    } else if (item == "addVote") {
+        changeVote(postID, "PUT");
+    } else if (item == "removeVote") {
+        changeVote(postID, "DELETE");
     }
-
-    const close = document.getElementById("upvotes-modal-close");
-
-    // Event listener for closing login form modal.
-    close.addEventListener('click', function() {
-        let modal = document.getElementById("upvotes-modal")
-        modal.classList.toggle("show-modal");
-        modal.classList.toggle("show-modal");
-    })
 }
 
 // Creates the modal to display upvotes.
@@ -33,19 +32,24 @@ function createUpvotesModal() {
     // Creates the close button.
     let closeBTN = createCloseButton();
 
+    // Creates header for list.
+    let header = document.createElement("h4");
+    header.innerText = "Up Voters"
+
     // Creates the unordered list.
     let ul = document.createElement("ul");
     ul.id = "upvotes-list";
 
     // Appends required elements to different elements to form modal.
     contentBox.appendChild(closeBTN);
+    contentBox.appendChild(header);
     contentBox.appendChild(ul);
     box.appendChild(contentBox);
     let element = document.getElementById("root");
     element.appendChild(box);
 }
 
-// Creates the close button for the login modal and sets required attributes.
+// Creates the close button for the upvotes and sets required attributes.
 function createCloseButton() {
     let closeBTN = document.createElement("span");
     let closeSym = document.createTextNode("x");
@@ -97,7 +101,7 @@ function displayVotes(votersID) {
             }
         }
 
-        // The url for accessing post of particular ID.
+        // The url for accessing user of particular ID.
         let user = localStorage.getItem("api") + "/user/?id=" + votersID[i];
         fetch(user, options)
             .then(response => response.json())
@@ -110,12 +114,50 @@ function displayVotes(votersID) {
 // Adds user to modal list of people who upvoted that post.
 function addUserNameUpvote(user) {
     let userLi = document.createElement("li");
+    userLi.classList.add("upvotes-modal-list");
     let name = document.createElement("p");
     name.innerText = user.username;
     userLi.appendChild(name);
 
     let ulElement = document.getElementById("upvotes-list");
     ulElement.appendChild(userLi);
+}
+
+// Adds an upvote to the post.
+function changeVote(postID, method) {
+    // Gets the element for the upvote arrow.
+    let arrow = document.getElementById(postID);
+    arrow.classList.toggle("post-arrow-click");
+
+    // Extracts the post ID.
+    let id = postID.substring(12, postID.length);
+
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
+    }
+
+    // The url for changing an upvote to a post.
+    let upVote = localStorage.getItem("api") + "/post/vote/?id=" + id;
+    // Fetches the post, to add upvote.
+    fetch(upVote, options)
+        .then(response => response.json())
+        .then(response => {
+            // Gets the element for vote number for post.
+            let numVotes = document.getElementById("vote-" + id);
+            // If adding a vote.
+            if (method == "PUT") {
+                numVotes.innerText = Number(numVotes.innerText) + 1;
+            // If removing a vote.
+            } else {
+                numVotes.innerText = Number(numVotes.innerText) - 1;
+            }
+        });
 }
 
 export default genUpvotes;
