@@ -150,7 +150,9 @@ footer > * {
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 10px 15px;
-    width: 30%;
+    width: 40%;
+    overflow: scroll;
+    max-height: 90%;
 }
 
 .close-button {
@@ -262,4 +264,8 @@ footer > * {
     padding-block-start: 5%;
     padding-inline-start: 10%;
     padding-inline-end: 10%;
+}
+
+.comment-text-button {
+    display: inline;
 }

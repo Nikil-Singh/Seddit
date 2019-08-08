@@ -7,12 +7,24 @@ function genProfile(command) {
         createProfileBTN();
         // Creates the modal for viewing the users own profile.
         createProfileModal();
+        // Creates the modal for updating users own profile.
+        createUpdateProfileModal();
     } else if (command == "populate") {
         // Populates the modal with the current users details.
         populateProfileModal();
     } else if (command == "refresh") {
         // Removes all data from profile modal.
         refreshProfileModal()
+    } else if (command == "populateProfileModal") {
+        // Populates the modal with users pre-existing date.
+        populateUpdateModal();
+    } else if (command == "clearErrors") {
+        // Removes all previous error messages on modal.
+        clearErrorMessages();
+    } else if (command == "verifyUpdate") {
+        // Checks if details given are correct and if so then updates the users
+        // profile.
+        verifyUpdate();
     }
 }
 
@@ -44,7 +56,7 @@ function createProfileModal() {
     contentBox.id = "profile-content-modal";
 
     // Creates the close button.
-    let closeBTN = createCloseButton();
+    let closeBTN = createCloseButton("profile-modal-");
 
     // Creates heading for profile modal.
     let headerElement = document.createElement("h3");
@@ -63,6 +75,8 @@ function createProfileModal() {
     let followers = profileInfoPara("Total Number of Followers: ", "followers");
     // Creates a section for the number of people following.
     let following = profileInfoPara("Total Number of People Following: ", "following");
+    // Creates a button for updating profile.
+    let button = updateProfileButton();
 
     contentBox.appendChild(closeBTN);
     contentBox.appendChild(headerElement);
@@ -72,19 +86,64 @@ function createProfileModal() {
     contentBox.appendChild(totalUpvotes);
     contentBox.appendChild(followers);
     contentBox.appendChild(following);
+    contentBox.appendChild(button);
     box.appendChild(contentBox);
 
     let element = document.getElementById("root");
     element.appendChild(box);
 }
 
+// Creates the modal for updating the user profile.
+function createUpdateProfileModal() {
+    // Creates the main modal box and sets required attributes.
+    let box = document.createElement("div");
+    box.classList.add("modal");
+    box.id = "update-profile-modal";
+
+    // Creates the section wihin modal with actual interactable content.
+    let contentBox = document.createElement("div");
+    contentBox.classList.add("modal-content");
+    contentBox.id = "update-profile-content-modal";
+
+    // Creates the close button.
+    let closeBTN = createCloseButton("update-profile-modal-");
+
+    // Creates heading for profile modal.
+    let form = document.createElement("form");
+    form.id = "update-profile-form";
+    let headerElement = document.createElement("h3");
+    let text = document.createTextNode("Update Profile");
+    headerElement.appendChild(text);
+
+    // Creates the textboxes to update profile.
+    let email = createInputTextbox("email");
+    let name = createInputTextbox("name");
+    let password = createInputTextbox("password");
+
+    // Creates the button to confirm update.
+    let confirmUpdate = updateProfileSubmit();
+
+    // Appends required elements to different elements to form modal.
+    contentBox.appendChild(closeBTN);
+    contentBox.appendChild(headerElement);
+    contentBox.appendChild(email);
+    contentBox.appendChild(name);
+    contentBox.appendChild(password);
+    contentBox.appendChild(confirmUpdate);
+    box.appendChild(contentBox);
+    form.appendChild(box);
+
+    let element = document.getElementById("root");
+    element.appendChild(form);
+}
+
 // Creates the close button for the login modal and sets required attributes.
-function createCloseButton() {
+function createCloseButton(item) {
     let closeBTN = document.createElement("span");
     let closeSym = document.createTextNode("x");
     closeBTN.appendChild(closeSym);
     closeBTN.classList.add("close-button");
-    closeBTN.id = "profile-modal-close";
+    closeBTN.id = item + "close";
     return closeBTN
 }
 
@@ -101,6 +160,59 @@ function profileInfoPara(message, id) {
 
     div.appendChild(info);
     div.appendChild(data);
+    return div;
+}
+
+// Creates the profile button for the modal and sets required attributes.
+function updateProfileButton() {
+    let button = document.createElement("button");
+    let btnDiv = document.createElement("div");
+    let text = document.createTextNode("Update Profile");
+    button.id = "profile-update";
+    button.classList.add("button", "button-secondary");
+    button.appendChild(text);
+    btnDiv.classList.add("modal-content-items");
+    btnDiv.appendChild(button);
+    return btnDiv;
+}
+
+// Creates the profile button for the modal and sets required attributes.
+function updateProfileSubmit() {
+    let button = document.createElement("button");
+    let btnDiv = document.createElement("div");
+    let text = document.createTextNode("Confirm Updates");
+    button.id = "profile-update-submit";
+    button.classList.add("button", "button-secondary");
+    button.appendChild(text);
+    btnDiv.classList.add("modal-content-items");
+    btnDiv.appendChild(button);
+    return btnDiv;
+}
+
+// Creates the textbox inputs for the modal and sets required attributes.
+function createInputTextbox(itemName) {
+    // Creates the title for textbox.
+    let title = document.createElement("p");
+    title.innerText = itemName.substr(0,1).toUpperCase()
+        + itemName.substr(1, itemName.length);
+
+    // Creates textbox with section for error messages.
+    let element = document.createElement("input");
+    element.id = "profile-update-" + itemName;
+    element.classList.add("modal-textbox");
+    if (itemName == "password") element.type = "password";
+    let errorText = document.createElement("p");
+    let text = document.createTextNode("");
+    errorText.classList.add("textbox-error");
+    errorText.appendChild(text);
+    errorText.id = "profile-error-" + itemName;
+
+    // Creates div for element so they can stack.
+    let div = document.createElement("div");
+    div.classList.add("modal-content-items");
+    div.appendChild(title);
+    div.appendChild(element);
+    div.appendChild(errorText);
     return div;
 }
 
@@ -148,6 +260,104 @@ function populateProfileModal() {
         });
 }
 
+// Adds the current users details to update modal for changing.
+function populateUpdateModal() {
+    console.log("Populating the update profile modal");
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
+    }
+
+    // The url for accessing user of particular ID.
+    let user = localStorage.getItem("api") + "/user/";
+    fetch(user, options)
+        .then(response => response.json())
+        .then(data => {
+            // Sets the values inside text boxes on update profile modal.
+            document.getElementById("profile-update-email").value = data.email;
+            document.getElementById("profile-update-name").value = data.name;
+        });
+}
+
+// Checks if the user inputted data for updating profile is correct and if so
+// then updates the user's profile.
+function verifyUpdate() {
+    console.log("Verifying update");
+    // Gets values stored for email, name and password.
+    const email = document.getElementById("profile-update-email").value;
+    const name = document.getElementById("profile-update-name").value;
+    const password = document.getElementById("profile-update-password").value;
+
+    // Variable to determine if any errors were found.
+    let authenticate = 1;
+
+    // Clears any prior error messages on modal.
+    clearErrorMessages();
+
+    // Checks if no username or password were given in form.
+    if (email === '') {
+        let element = document.getElementById("profile-error-email");
+        element.innerText = "Email must have more than 0 characters";
+        authenticate = 0;
+    } else if (name === '') {
+        let element = document.getElementById("profile-error-name");
+        element.innerText = "Name must have more than 0 characters";
+        authenticate = 0;
+    } else if (password === '') {
+        let element = document.getElementById("profile-error-password");
+        element.innerText = "Password must have more than 0 characters";
+        authenticate = 0;
+    }
+
+    // Returns if there are any errors.
+    if (authenticate == 0) return;
+    // Clears any error messages left.
+    clearErrorMessages();
+
+    // Updates the user profile.
+    updateProfile(email, name, password);
+}
+
+// Updates the user profile with submitted information.
+function updateProfile(email, name, password) {
+    console.log("Updating User Profile");
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+
+    // Holds the parameters needed to call backend for updating profile data.
+    const payload = {
+        email: email,
+        name: name,
+        password: password
+    }
+
+    // Compiles all the parameters.
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        },
+        body: JSON.stringify(payload)
+    }
+
+    // Is the URL for fetching login.
+    let profileAuth = localStorage.getItem("api") + "/user/";
+
+    // Attempts to login through the backend and handles any errors that return.
+    fetch(profileAuth, options)
+        .then(data => data.json())
+        .then(data => {
+            let modal = document.getElementById("update-profile-modal");
+            modal.classList.toggle("show-modal");
+        });
+}
+
 // Refreshes the profile modal of all previous data.
 function refreshProfileModal() {
     document.getElementById("profile-username").innerText = "";
@@ -156,6 +366,14 @@ function refreshProfileModal() {
     document.getElementById("profile-followers").innerText = "";
     document.getElementById("profile-following").innerText = "";
     document.getElementById("profile-totalUpvotes").innerText = "";
+}
+
+// Refreshes the update profile modal.
+function clearErrorMessages() {
+    // Removes all previous error messages.
+    document.getElementById("profile-error-email").innerText = "";
+    document.getElementById("profile-error-name").innerText = "";
+    document.getElementById("profile-error-password").innerText = "";
 }
 
 export default genProfile;

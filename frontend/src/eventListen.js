@@ -20,12 +20,16 @@ function eventListen() {
     const registerBTN = document.getElementById("signup-submit");
     const closeSignup = document.getElementById("signup-modal-close");
     const profileBTN = document.getElementById("profile-view");
+    const profileUpdateBTN = document.getElementById("profile-update");
+    const profileSubmit = document.getElementById("profile-update-submit");
+    const profileUpdateClose = document.getElementById("update-profile-modal-close");
     const closeProfile = document.getElementById("profile-modal-close");
     const postBTN = document.getElementById("post-open-modal");
     const postSubmitBTN = document.getElementById("post-submit");
     const closePost = document.getElementById("post-modal-close");
     const closeUpvote = document.getElementById("upvotes-modal-close");
     const closeComments = document.getElementById("comments-modal-close");
+    const submitComment = document.getElementById("comment-submit");
 
     // Gets required modals to be opened or closed.
     const loginModal = document.getElementById("login-modal");
@@ -34,6 +38,7 @@ function eventListen() {
     const upvoteModal = document.getElementById("upvotes-modal")
     const commentsModal = document.getElementById("comments-modal");
     const postModal = document.getElementById("post-modal");
+    const profileUpdateModal = document.getElementById("update-profile-modal");
 
     // Checks if user is not logged in so it displays login otherwise if the
     // user is logged in then displays logout.
@@ -119,6 +124,28 @@ function eventListen() {
         genProfile("populate");
     })
 
+    // Event listener for opening modal to update profile.
+    profileUpdateBTN.addEventListener('click', function() {
+        console.log("Update Profile");
+        profileUpdateModal.classList.toggle("show-modal");
+        // Populates the modal with pre-existing information.
+        genProfile("populateProfileModal");
+    })
+
+    // Event listener for submitting profile changes.
+    profileSubmit.addEventListener('click', function(e) {
+        console.log("Submitting Profile Changes");
+        e.preventDefault();
+        genProfile("verifyUpdate");
+    })
+
+    // Event lisyener for closing profile update modal.
+    profileUpdateClose.addEventListener('click', function() {
+        console.log("Closing Profile Update Modal");
+        profileUpdateModal.classList.toggle("show-modal");
+        genProfile("clearErrors");
+    })
+
     // Event listener for closing upvotes modal.
     closeProfile.addEventListener('click', function() {
         console.log("Close Profile Modal");
@@ -162,25 +189,36 @@ function eventListen() {
     closeComments.addEventListener('click', function() {
         console.log("Closing Comment Modal");
         commentsModal.classList.toggle("show-modal");
+        // Removes the comment ID from local storage.
+        localStorage.removeItem("commentID");
+        // Removes errors from comments modal.
+        genComments("clearErrors");
+    })
+
+    // Submits comment made.
+    submitComment.addEventListener('click', function() {
+        console.log("Submiting comment");
+        // Submits comment to be verified then submitted if correct.
+        genComments("makeComment");
     })
 
     // Used to listen to events related to dynamically created posts.
     document.addEventListener('click', function(e) {
         if (e.target.id.includes("vote-")) {
-            console.log("Clicked upvotes number" + e.target.id);
+            console.log("Clicked upvotes number " + e.target.id);
             if (localStorage.getItem("token") !== null) {
                 // Performs the required action in relation to up voting.
                 showUpvotes(e);
             }
 
         } else if (e.target.id.includes("upVoteArrow-")) {
-            console.log("Clicked upvotes arrow" + e.target.id);
+            console.log("Clicked upvotes arrow " + e.target.id);
             if (localStorage.getItem("token") !== null) {
                 // Performs the required action in relation to up voting.
                 showUpvotes(e);
             }
         } else if (e.target.id.includes("comments-post-")) {
-            console.log("Clicked comments" + e.target.id);
+            console.log("Clicked comments " + e.target.id);
             if (localStorage.getItem("token") !== null) {
                 showComment(e);
             }
@@ -211,6 +249,8 @@ function showUpvotes(e) {
 // Show modal with comments.
 function showComment(event) {
     console.log("Showing Comments")
+    // Adds the comment ID to the local storage.
+    localStorage.setItem("commentID", event.target.id);
     genComments("showComments", event.target.id);
 }
 

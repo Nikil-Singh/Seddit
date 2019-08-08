@@ -7,6 +7,10 @@ function genComments(item, postID) {
     } else if (item == "showComments") {
         refreshComments()
         showComments(postID);
+    } else if (item == "makeComment") {
+        verifyComment();
+    } else if (item == "clearErrors") {
+        clearErrorMessages();
     }
 }
 
@@ -34,10 +38,14 @@ function createCommentsModal() {
     ul.id = "comments-list";
     ul.classList.add("comment-list");
 
+    // Gets the div for comment texttbox and button.
+    let comment = commentTextBox();
+
     // Appends required elements to different elements to form modal.
     contentBox.appendChild(closeBTN);
     contentBox.appendChild(header);
     contentBox.appendChild(ul);
+    contentBox.appendChild(comment);
     box.appendChild(contentBox);
     let element = document.getElementById("root");
     element.appendChild(box);
@@ -51,6 +59,37 @@ function createCloseButton() {
     closeBTN.classList.add("close-button");
     closeBTN.id = "comments-modal-close";
     return closeBTN
+}
+
+// Creates a textbox to input comments.
+function commentTextBox() {
+    // Creates textbox with section for error messages.
+    let element = document.createElement("input");
+    element.id = "comment-textbox";
+    element.classList.add("modal-textbox", "comment-text-button");
+    element.placeholder = "Enter Comment Here";
+
+    let errorText = document.createElement("p");
+    let errorT = document.createTextNode("");
+    errorText.classList.add("textbox-error");
+    errorText.appendChild(errorT);
+    errorText.id = "comments-error";
+
+    // Creates a button to submit comment.
+    let btn = document.createElement("button");
+    btn.classList.add("button", "button-secondary", "comment-text-button");
+    btn.id = "comment-submit";
+    let text = document.createTextNode("Comment");
+    btn.appendChild(text);
+
+    // Creates div for element so they can stack.
+    let div = document.createElement("div");
+    div.classList.add("comment-content-item");
+    div.id = "comment-submit-items";
+    div.appendChild(element);
+    div.appendChild(btn);
+    div.appendChild(errorText);
+    return div;
 }
 
 // Gets the ID's of users who commented on the post.
@@ -78,7 +117,10 @@ function showComments(postID) {
             displayComments(data.comments);
         });
     let commentModal = document.getElementById("comments-modal");
-    commentModal.classList.toggle("show-modal");
+
+    if (!commentModal.classList.contains("show-modal")) {
+        commentModal.classList.toggle("show-modal");
+    }
 }
 
 // Cycles through commenter IDs and adds them to modal to be displayed.
@@ -86,35 +128,41 @@ function displayComments(commenters) {
     let ul = document.getElementById("comments-list")
     // Cycles through all commenters.
     for (let i = 0; i < commenters.length; i++) {
-        // Creates the list for hold the comment.
-        let userLi = document.createElement("li");
-        userLi.classList.add("comments-modal-list");
-
-        // Holds the name of the commenter.
-        let name = document.createElement("p");
-        name.innerText = commenters[i].author;
-        name.classList.add("comments-modal-text");
-
-        // Holds the actual comment.
-        let comment = document.createElement("p");
-        comment.innerText = commenters[i].comment;
-        comment.classList.add("comments-modal-text");
-
-        // Holds the date.
-        let timestamp = getDate(new Date(commenters[i].published * 1000));
-        let time = document.createElement("p");
-        time.innerText = timestamp;
-        time.classList.add("comments-modal-text");
-
-        // Appends all the elements of a user comment to a list.
-        userLi.appendChild(name);
-        userLi.appendChild(comment);
-        userLi.appendChild(time);
-
+        let userLi = createComment(commenters[i]);
         // Appends user comment to list of comments.
         ul.appendChild(userLi);
     }
 
+}
+
+// Create a comment.
+function createComment(commenter) {
+    // Creates the list for hold the comment.
+    let userLi = document.createElement("li");
+    userLi.classList.add("comments-modal-list");
+
+    // Holds the name of the commenter.
+    let name = document.createElement("p");
+    name.innerText = commenter.author;
+    name.classList.add("comments-modal-text");
+
+    // Holds the actual comment.
+    let comment = document.createElement("p");
+    comment.innerText = commenter.comment;
+    comment.classList.add("comments-modal-text");
+
+    // Holds the date.
+    let timestamp = getDate(new Date(commenter.published * 1000));
+    let time = document.createElement("p");
+    time.innerText = timestamp;
+    time.classList.add("comments-modal-text");
+
+    // Appends all the elements of a user comment to a list.
+    userLi.appendChild(name);
+    userLi.appendChild(comment);
+    userLi.appendChild(time);
+
+    return userLi;
 }
 
 // Converts unix date to readable date.
@@ -153,7 +201,86 @@ function refreshComments() {
     newUl.classList.add("comment-list");
 
     // Append new unordered list to modal.
-    modal.appendChild(newUl);
+    modal.insertBefore(newUl, modal.childNodes[2]);
+
+    // Clears any error messages.
+    clearErrorMessages()
+}
+
+// Verifies whether the comment is valid.
+function verifyComment() {
+    console.log(localStorage.getItem("commentID"));
+    // Gets value stored in comments.
+    const comment = document.getElementById("comment-textbox").value;
+
+    // Variable to determine if any errors were found.
+    let authenticate = 1;
+
+    // Clears any prior error messages on modal.
+    clearErrorMessages();
+
+    // Checks if no comment was entered.
+    if (comment === '') {
+        let element = document.getElementById("comments-error");
+        element.innerText = "Comment must have more than one character";
+        authenticate = 0;
+    }
+
+    // Returns if there are any errors.
+    if (authenticate == 0) return;
+    // Clears any error messages left.
+    clearErrorMessages();
+
+    addComment(comment);
+}
+
+// Gets rid of prior error messages if there no more errors.
+function clearErrorMessages() {
+    document.getElementById("comments-error").innerText = "";
+}
+
+// Adds a comment to a post.
+function addComment(comment) {
+    console.log("Adding comment");
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    // Holds the parameters needed to call backend for login.
+    const payload = {
+        comment: comment
+    }
+
+    // Compiles all the parameters.
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        },
+        body: JSON.stringify(payload)
+    }
+    let commentID = localStorage.getItem("commentID");
+    commentID = commentID.substring(14, commentID.length);
+    // Is the URL for fetching login.
+    let commentAuth = localStorage.getItem("api") + "/post/comment/?id=" + commentID;
+    // Fetches the comment and adds it.
+    fetch(commentAuth, options)
+        .then(response => response.json())
+        .then(response => {
+            // Updates the number of comments on post.
+            let numComments = document
+                .getElementById("comments-post-" + commentID).innerText;
+            let number = numComments.substr(0,numComments.indexOf(' '));
+            number = 1 + Number(number);
+            document.getElementById("comments-post-" + commentID)
+                .innerText = number + " Comments";
+
+            console.log("Total Number of Comments for Post is: " + number);
+
+            // Updates the comment modal to display comments.
+            refreshComments()
+            showComments("comments-post-" + commentID);
+        });
+
 }
 
 export default genComments;
