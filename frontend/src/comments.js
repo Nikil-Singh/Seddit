@@ -1,14 +1,11 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
-
 // Generates the comments modal.
 function genComments(item, postID) {
     if (item == "generate") {
         createCommentsModal();
     } else if (item == "showComments") {
-        refreshPage("comments");
+        refreshComments()
         showComments(postID);
     }
 }
@@ -60,7 +57,7 @@ function createCloseButton() {
 function showComments(postID) {
 
     // Extracts the posts ID from postID string.
-    postID = postID.substring(9, postID.length);
+    postID = postID.substring(14, postID.length);
 
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
@@ -86,7 +83,6 @@ function showComments(postID) {
 
 // Cycles through commenter IDs and adds them to modal to be displayed.
 function displayComments(commenters) {
-    console.log(commenters);
     let ul = document.getElementById("comments-list")
     // Cycles through all commenters.
     for (let i = 0; i < commenters.length; i++) {
@@ -140,6 +136,24 @@ function getDate(unixDate) {
 
     // Returns the timestamp in form time on date.
     return time + " on " + date;
+}
+
+// Refreshes the comments modal by removing list of comments on modal.
+function refreshComments() {
+    // Gets the parent modal.
+    let modal = document.getElementById("comments-content-modal");
+    // Gets the unordered list to be removed.
+    let ul = document.getElementById("comments-list");
+    // Gets rid of all previous upvotes displayed.
+    modal.removeChild(ul);
+
+    // Creates the unordered list.
+    let newUl = document.createElement("ul");
+    newUl.id = "comments-list";
+    newUl.classList.add("comment-list");
+
+    // Append new unordered list to modal.
+    modal.appendChild(newUl);
 }
 
 export default genComments;

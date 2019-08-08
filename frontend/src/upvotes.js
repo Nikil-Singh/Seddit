@@ -1,14 +1,11 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
-
 // Generates the upvotes modal.
 function genUpvotes(item, postID) {
     if (item == "generate") {
         createUpvotesModal();
     } else if (item == "showVotes") {
-        refreshPage("upvotes");
+        refreshUpvotes();
         showVotes(postID);
     } else if (item == "addVote") {
         changeVote(postID, "PUT");
@@ -158,6 +155,23 @@ function changeVote(postID, method) {
                 numVotes.innerText = Number(numVotes.innerText) - 1;
             }
         });
+}
+
+// Refreshes the upvote modal by removing previous upvotes on modal.
+function refreshUpvotes() {
+    // Gets the parent modal.
+    let modal = document.getElementById("upvotes-content-modal");
+    // Gets the unordered list to be removed.
+    let ul = document.getElementById("upvotes-list");
+    // Gets rid of all previous upvotes displayed.
+    modal.removeChild(ul);
+
+    // Creates a new unordered list.
+    let newUl = document.createElement("ul");
+    newUl.id = "upvotes-list";
+
+    // Append new unordered list to modal.
+    modal.appendChild(newUl);
 }
 
 export default genUpvotes;

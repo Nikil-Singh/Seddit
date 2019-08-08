@@ -1,8 +1,5 @@
 // Written by Nikil Singh (z5209322)
 
-import genLogin from './login.js'
-import genSignup from './signup.js'
-
 //Generates navigation bar.
 function genNavBar() {
     // Creates the actual bar.

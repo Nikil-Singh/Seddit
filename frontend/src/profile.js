@@ -1,32 +1,19 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
-
 // Creates the required links and modal to display user profiles.
-function genProfile() {
-    createProfileBTN();
-    let modal = createProfileModal();
-
-    const profile = document.getElementById("profile-view");
-    const closeProfile = document.getElementById("profile-modal-close");
-
-    // If user is logged in then display profile button.
-    if (localStorage.getItem("token") !== null) {
-        profile.classList.toggle("button-display");
-    }
-
-    // Event listener for closing upvotes modal.
-    profile.addEventListener('click', function() {
-        refreshPage("profile");
+function genProfile(command) {
+    if (command == "generate") {
+        // Creates the button to view modal of users own profile.
+        createProfileBTN();
+        // Creates the modal for viewing the users own profile.
+        createProfileModal();
+    } else if (command == "populate") {
+        // Populates the modal with the current users details.
         populateProfileModal();
-        modal.classList.toggle("show-modal");
-    })
-
-    // Event listener for closing upvotes modal.
-    closeProfile.addEventListener('click', function() {
-        modal.classList.toggle("show-modal");
-    })
+    } else if (command == "refresh") {
+        // Removes all data from profile modal.
+        refreshProfileModal()
+    }
 }
 
 // Creates the sign in button for the modal and sets required attributes.
@@ -89,8 +76,6 @@ function createProfileModal() {
 
     let element = document.getElementById("root");
     element.appendChild(box);
-
-    return box;
 }
 
 // Creates the close button for the login modal and sets required attributes.
@@ -121,6 +106,7 @@ function profileInfoPara(message, id) {
 
 // Populates the profile modal with required user information.
 function populateProfileModal() {
+    console.log("Populating Profile Modal");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -160,6 +146,16 @@ function populateProfileModal() {
                     });
             }
         });
+}
+
+// Refreshes the profile modal of all previous data.
+function refreshProfileModal() {
+    document.getElementById("profile-username").innerText = "";
+    document.getElementById("profile-name").innerText = "";
+    document.getElementById("profile-numPosts").innerText = "";
+    document.getElementById("profile-followers").innerText = "";
+    document.getElementById("profile-following").innerText = "";
+    document.getElementById("profile-totalUpvotes").innerText = "";
 }
 
 export default genProfile;

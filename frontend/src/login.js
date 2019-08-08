@@ -1,62 +1,26 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
+// Imports in scripts
+import genFeed from './feed.js'
 
 // Generates the login and logout buttons.
-function genLogin() {
-    // Generates the login and gets the button element for it.
-    const login = createLogin();
-    // Generates the logout and gets the button element for it.
-    const logout = createLogout();
-    // Creates the modal for displaying the login form.
-    createLoginModal();
-
-    // Gets all clickable elements from login modal form.
-    const modal = document.getElementById("login-modal");
-    const close = document.getElementById("login-modal-close");
-    const signIn = document.getElementById("login-submit");
-    const profile = document.getElementById("profile-view");
-
-    // Checks if a token is stored in local storage (checks if user is logged
-    // in and then displays required buttons.)
-    if (localStorage.getItem("token") === null) {
-        login.classList.toggle("button-display");
-    } else {
-        logout.classList.toggle("button-display");
-    }
-
-    // Event listener for if logout button is clicked.
-    logout.addEventListener('click', function() {
-        // Clears token and user ID from local storage since the user is
-        // logging out.
-        localStorage.removeItem("token");
-        localStorage.removeItem("userID");
-        // Refreshes the navigation bar.
-        refreshPage("nav");
-        // Refreshes the feed.
-        refreshPage("feed");
-    })
-
-    // Event listener for if login button is clicked.
-    login.addEventListener('click', function() {
-        modal.classList.toggle("show-modal");
-    });
-
-    // Event listener for closing login form modal.
-    close.addEventListener('click', function() {
-        modal.classList.toggle("show-modal");
+function genLogin(command) {
+    if (command == "generate") {
+        // Generates the login and gets the button element for it.
+        createLogin();
+        // Generates the logout and gets the button element for it.
+        createLogout();
+        // Creates the modal for displaying the login form.
+        createLoginModal();
+    } else if (command == "verifySignIn") {
+        // Checks if details in login are correct, and if so then logs the user
+        // in.
+        verifySignIn();
+    } else if (command == "clearErrors") {
         // Gets rid of any error messages.
         clearErrorMessages();
-    })
+    }
 
-    // Event listener for sign in button on login form modal.
-    signIn.addEventListener('click', function(e) {
-        // Prevents page from refreshing if clicked.
-        e.preventDefault();
-        // Checks if sign in data is correct.
-        verifySignIn();
-    })
 
 }
 
@@ -73,8 +37,6 @@ function createLogin() {
     // Appends login button to list in header.
     let element = document.getElementById("login-li");
     element.appendChild(btn);
-
-    return btn;
 }
 
 // Creates the logout button.
@@ -89,8 +51,6 @@ function createLogout() {
     // Appends login button to list in header.
     let element = document.getElementById("logout-li");
     element.appendChild(btn);
-
-    return btn;
 }
 
 // Creates the modal for login form.
@@ -186,7 +146,7 @@ function createSignInBTN() {
 }
 
 // Checks if login details are correct and display error messages if needed.
-function verifySignIn(token) {
+function verifySignIn() {
     // Gets values stored for username and password.
     const username = document.getElementById("login-username");
     const password = document.getElementById("login-password");
@@ -213,13 +173,7 @@ function verifySignIn(token) {
     // Clears any error messages left.
     clearErrorMessages();
 
-    return loginUser(username.value, password.value);
-}
-
-// Gets rid of prior error messages if there no more errors.
-function clearErrorMessages() {
-    document.getElementById("login-error-username").innerText = "";
-    document.getElementById("login-error-password").innerText = "";
+    loginUser(username.value, password.value);
 }
 
 // Calls the backend to check if username and password is valid.
@@ -256,18 +210,53 @@ function loginUser(username, password) {
         });
 }
 
+// Gets rid of prior error messages if there no more errors.
+function clearErrorMessages() {
+    document.getElementById("login-error-username").innerText = "";
+    document.getElementById("login-error-password").innerText = "";
+}
+
 // Handles any errors sent back from backend.
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
+        console.log("Sign In Fetch Error");
         throw (response);
     }
     // Otherwise return the response.
     return response;
 }
 
+// Handles a successful login.
+function successfulLogin(data) {
+    console.log("Successful Login");
+    // Closes modal.
+    let modal = document.getElementById("login-modal");
+    modal.classList.toggle("show-modal");
+
+    // Saves token for user in local storage.
+    localStorage.setItem("token", data.token);
+
+    // Gets and saves current user ID in local storage.
+    getCurrentUserID();
+
+    // Refreshes the navigation bar, feed, login and signup modals.
+    document.getElementById("login-btn").classList.toggle("button-display");
+    document.getElementById("logout-btn").classList.toggle("button-display");
+    document.getElementById("signup-btn").classList.toggle("button-display");
+    document.getElementById("profile-view").classList.toggle("button-display");
+    console.log("Removing Previous Feed");
+    genFeed("removeCurrentFeed");
+    document.getElementById("post-open-modal").classList.toggle("button-display");
+    console.log("Getting New Feed");
+    genFeed("morePrivate");
+    //refreshPage("feed");
+    //refreshPage("login/signup");
+}
+
 // Handles a failed login along with errors.
 function failedLogin(error) {
+    console.log("Failed Login");
     // First removes any prior error messages.
     let usernameError = document.getElementById("login-error-username");
     document.getElementById("login-error-password").innerText = "";
@@ -281,26 +270,9 @@ function failedLogin(error) {
     }
 }
 
-// Handles a successful login.
-function successfulLogin(data) {
-    // Closes modal.
-    let modal = document.getElementById("login-modal");
-    modal.classList.toggle("show-modal");
-
-    // Saves token for user in local storage.
-    localStorage.setItem("token", data.token);
-
-    // Gets and saves current user ID in local storage.
-    getCurrentUserID();
-
-    // Refreshes the navigation bar, feed, login and signup modals.
-    refreshPage("nav");
-    refreshPage("feed");
-    refreshPage("login/signup");
-}
-
 // Gets the current user's ID.
 function getCurrentUserID() {
+    console.log("Adding current user id to local storage.")
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -320,5 +292,4 @@ function getCurrentUserID() {
             localStorage.setItem("userID", data.id);
         });
 }
-
 export default genLogin;

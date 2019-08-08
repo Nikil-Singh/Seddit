@@ -1,45 +1,23 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
+// Imports in scripts
+import genFeed from './feed.js'
 
 // Generates the signup button.
-function genSignup() {
-    // Generates the signup and gets the button element for it.
-    const signup = createSignup();
-    // Creates the modal for displaying the signup form.
-    createSignupModal();
-
-    // Gets all clickable elements from login modal form.
-    let modal = document.getElementById("signup-modal");
-    const close = document.getElementById("signup-modal-close");
-    const register = document.getElementById("signup-submit");
-
-    // Checks if a token is stored in local storage (checks if user is logged
-    // in and then displays required buttons.)
-    if (localStorage.getItem("token") === null) {
-        signup.classList.toggle("button-display");
-    }
-
-    // Event listener for when signup button is clicked.
-    signup.addEventListener('click', function() {
-        modal.classList.toggle("show-modal");
-    });
-
-    // Event listener for closing register form modal.
-    close.addEventListener('click', function() {
-        modal.classList.toggle("show-modal");
-        // Gets rid of any error messages.
-        clearErrorMessages()
-    })
-
-    // Event listener for register in button on signup form modal.
-    register.addEventListener('click', function(e) {
-        // Prevents page from refreshing if clicked.
-        e.preventDefault();
-        // Checks if register details are correct.
+function genSignup(item) {
+    if (item == "generate") {
+        // Generates the signup and gets the button element for it.
+        createSignup();
+        // Creates the modal for displaying the signup form.
+        createSignupModal();
+    } else if (item == "verifyRegister") {
+        // Checks if details in signup are correct, and if so then logs the user
+        // in as well as signing the user up.
         verifyRegister();
-    })
+    } else if (item == "clearErrors") {
+        // Gets rid of any error messages.
+        clearErrorMessages();
+    }
 }
 
 // Creates the signup button.
@@ -55,10 +33,7 @@ function createSignup() {
     // Appends signup button to list in header.
     let element = document.getElementById("signup-li");
     element.appendChild(btn);
-
-    return btn;
 }
-
 
 // Creates the modal for signup form.
 function createSignupModal() {
@@ -106,14 +81,17 @@ function createSignupModal() {
     element.appendChild(form);
 }
 
-// Creates the close button for the signup modal.
-function createCloseButton() {
-    let closeBTN = document.createElement("span");
-    let closeSym = document.createTextNode("x");
-    closeBTN.appendChild(closeSym);
-    closeBTN.classList.add("close-button");
-    closeBTN.id = "signup-modal-close";
-    return closeBTN
+// Creats the sign in button for the modal.
+function createRegisterBTN() {
+    let button = document.createElement("button");
+    let btnDiv = document.createElement("div");
+    let text = document.createTextNode("Register");
+    button.id = "signup-submit";
+    button.classList.add("button", "button-secondary");
+    button.appendChild(text);
+    btnDiv.classList.add("modal-content-items");
+    btnDiv.appendChild(button);
+    return btnDiv;
 }
 
 // Creates the textbox inputs for the modal.
@@ -147,17 +125,14 @@ function createInputTextbox(itemName) {
     return div;
 }
 
-// Creats the sign in button for the modal.
-function createRegisterBTN() {
-    let button = document.createElement("button");
-    let btnDiv = document.createElement("div");
-    let text = document.createTextNode("Register");
-    button.id = "signup-submit";
-    button.classList.add("button", "button-secondary");
-    button.appendChild(text);
-    btnDiv.classList.add("modal-content-items");
-    btnDiv.appendChild(button);
-    return btnDiv;
+// Creates the close button for the signup modal.
+function createCloseButton() {
+    let closeBTN = document.createElement("span");
+    let closeSym = document.createTextNode("x");
+    closeBTN.appendChild(closeSym);
+    closeBTN.classList.add("close-button");
+    closeBTN.id = "signup-modal-close";
+    return closeBTN
 }
 
 // Checks if register details are correct and display error messages if needed.
@@ -249,25 +224,15 @@ function signupUser(username, password, email, name) {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
+        console.log("Register Fetch Error");
         throw (response);
     }
     return response;
 }
 
-// Handles a failed signup.
-function failedSignup(error) {
-    // First removes any prior error messages.
-    let usernameError = document.getElementById("signup-error-username");
-    document.getElementById("login-error-password").innerText = "";
-
-    // Checks if error status was 409, so username is already taken.
-    if (error.status == "409") {
-        usernameError.innerText = "Username already taken";
-    }
-}
-
 // Handles successful signup.
 function successfulSignup(data) {
+    console.log("Successful Register");
     // Closes modal.
     let modal = document.getElementById("signup-modal");
     modal.classList.toggle("show-modal");
@@ -279,13 +244,35 @@ function successfulSignup(data) {
     getCurrentUserID();
 
     // Refreshes the navigation bar, feed, login and signup modals.
-    refreshPage("nav");
-    refreshPage("feed");
-    refreshPage("login/signup");
+    document.getElementById("login-btn").classList.toggle("button-display");
+    document.getElementById("logout-btn").classList.toggle("button-display");
+    document.getElementById("signup-btn").classList.toggle("button-display");
+    document.getElementById("profile-view").classList.toggle("button-display");
+    console.log("Removing Previous Feed");
+    genFeed("removeCurrentFeed");
+    document.getElementById("post-open-modal").classList.toggle("button-display");
+    console.log("Getting New Feed");
+    genFeed("morePrivate");
+    //refreshPage("feed");
+    //refreshPage("login/signup");
+}
+
+// Handles a failed signup.
+function failedSignup(error) {
+    console.log("Failed Register");
+    // First removes any prior error messages.
+    let usernameError = document.getElementById("signup-error-username");
+    document.getElementById("login-error-password").innerText = "";
+
+    // Checks if error status was 409, so username is already taken.
+    if (error.status == "409") {
+        usernameError.innerText = "Username already taken";
+    }
 }
 
 // Gets the current user's ID.
 function getCurrentUserID() {
+    console.log("Adding current user id to local storage.")
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -305,6 +292,4 @@ function getCurrentUserID() {
             localStorage.setItem("userID", data.id);
         });
 }
-
-
 export default genSignup;

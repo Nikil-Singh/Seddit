@@ -1,62 +1,29 @@
 // Written by Nikil Singh (z5209322)
 
-// Imports in other JS scripts
-import genUpvotes from './upvotes.js'
-import genComments from './comments.js'
-import genPost from './post.js'
-import genProfile from './profile.js'
-
 // Generates the feed.
-function genFeed(item) {
+function genFeed(item, postID) {
     if (item == "generate") {
         // Creates the feed.
         createFeed();
+        // Checks if user is logegd in.
+        if (localStorage.getItem("token") === null) {
+            // User not logged in, so display public feed.
+            getPostsPublic();
+        } else {
+            // User is logged in, so display user specific feed.
+            getPostsPrivate();
+        }
+    } else if (item == "morePublic") {
+        // User not logged in, so display public feed.
+        getPostsPublic();
     } else if (item == "morePrivate") {
         // Add more to the feed.
-        appendFeed();
-    }
-
-    // If user is logged in.
-    if (localStorage.getItem("token") !== null) {
-
-        // Gets all clickable elements from feed.
-        const closeUpvote = document.getElementById("upvotes-modal-close");
-        const upvoteModal = document.getElementById("upvotes-modal");
-        const closeComments = document.getElementById("comments-modal-close");
-        const commentsModal = document.getElementById("comments-modal");
-        const postModal = document.getElementById("post-modal");
-        const closePost = document.getElementById("post-modal-close");
-        const postBTN = document.getElementById("post-open-modal");
-        const postSubmitBTN = document.getElementById("post-submit");
-
-        // Event listener for closing upvotes modal.
-        closeUpvote.addEventListener('click', function() {
-            upvoteModal.classList.toggle("show-modal");
-        })
-
-        // Event listener for closing comments modal.
-        closeComments.addEventListener('click', function() {
-            commentsModal.classList.toggle("show-modal");
-        })
-
-        // Event listener for closing post modal.
-        postBTN.addEventListener('click', function() {
-            postModal.classList.toggle("show-modal");
-        })
-
-        // Event listener for closing post modal.
-        closePost.addEventListener('click', function() {
-            postModal.classList.toggle("show-modal");
-            genPost("clearErrors");
-        })
-
-        // Event listener for checking submission of post in modal.
-        postSubmitBTN.addEventListener('click', function(e) {
-            // Prevents page from refreshing if clicked.
-            e.preventDefault();
-            // Checks if post data is correct.
-            genPost("makePost");
-        })
+        getPostsPrivate();
+        //appendFeed();
+    } else if (item == "removeCurrentFeed") {
+        removeCurrentFeed();
+    } else if (item == "newPost") {
+        appendPost(postID);
     }
 }
 
@@ -76,45 +43,17 @@ function createFeed() {
     let feedHeader = createFeedHeader();
 
     // Appends required elements to main.
-    uList.appendChild(feedHeader);
-
-    // Checks if user is logegd in.
-    if (localStorage.getItem("token") === null) {
-        // User not logged in, so display public feed.
-        getPostsPublic(uList);
-    } else {
-        // User is logged in, so display user specific feed.
-        getPostsPrivate(uList);
-        if (document.getElementById("upvotes-modal") == null) {
-            // Creates a modal to show who upvoted on which post.
-            genUpvotes("generate", -1);
-        }
-        if (document.getElementById("comments-modal") == null) {
-            // Creates a modal to show who commented on which post.
-            genComments("generate", -1);
-        }
-        if (document.getElementById("post-modal") == null) {
-            // Creates a modal form for making a post.
-            genPost("generate");
-        }
-    }
-
-    // Appends required elements to other elements to generate the feed.
+    main.appendChild(feedHeader);
     main.appendChild(uList);
     let element = document.getElementById("root");
     element.appendChild(main);
-}
-
-// Appends unordered list to required element.
-function appendContent(element, uList) {
-    uList.appendChild(element);
 }
 
 // Creates the feed header.
 function createFeedHeader() {
     // Creates div for feed header.
     let headDiv = document.createElement("div");
-    headDiv.classList.add("feed-header");
+    headDiv.classList.add("feed-header", "feed-header-padding");
 
     // Creates heading for title.
     let heading = document.createElement("h3");
@@ -124,7 +63,7 @@ function createFeedHeader() {
 
     // Creates button to post.
     let btn = document.createElement("button");
-    btn.classList.add("button", "button-secondary");
+    btn.classList.add("button", "button-secondary", "button-display");
     btn.id = "post-open-modal";
     let btnText = document.createTextNode("Post");
     btn.appendChild(btnText);
@@ -134,6 +73,61 @@ function createFeedHeader() {
     headDiv.appendChild(btn);
 
     return headDiv;
+}
+
+// Gets posts for users not logged in.
+function getPostsPublic() {
+    const uList = document.getElementById("feed");
+    // Sets options to get public posts.
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }
+
+    // The url for accessing public posts.
+    let publicPost = localStorage.getItem("api") + "/post/public";
+    // Fetches the actual posts, formats and displays them.
+    fetch(publicPost, options)
+        .then(response => response.json())
+        .then(response => {
+            // Cycles through all the posts and adds them to the page.
+            for (let i = 0; i < response.posts.length; i++) {
+                let post = createPost(response.posts[i])
+                appendContent(post, uList);
+            }
+
+            // Generates empty feed if user has no posts.
+            if (response.posts.length == 0) {
+                let post = emptyFeed();
+                appendContent(post, uList);
+            }
+        });
+}
+
+// Appends unordered list to required element.
+function appendContent(element, uList) {
+    uList.appendChild(element);
+}
+
+// Generates a feed called empty feed if the user does not have any posts to
+// view.
+function emptyFeed() {
+    // Creates the list.
+    let list = document.createElement("li");
+    list.classList.add("post");
+    list.setAttribute("data-id-feed","");
+
+    // Creates text stating feed is empty.
+    let empty = document.createElement("p");
+    let text = document.createTextNode("Currently your feed is empty.");
+
+    // Appends required elements.
+    empty.appendChild(text);
+    list.appendChild(empty);
+
+    return list;
 }
 
 // Creates required HTML for one post.
@@ -221,7 +215,7 @@ function createPost(postData) {
 
     // Holds the number of comments on post.
     let comments = document.createElement("p");
-    comments.id = "comments-" + postData.id;
+    comments.id = "comments-post-" + postData.id;
     comments.classList.add("comments-number");
     let numComments = document
         .createTextNode(postData.comments.length + " Comments");
@@ -244,51 +238,46 @@ function createPost(postData) {
     return list;
 }
 
-// Generates a feed called empty feed if the user does not have any posts to
-// view.
-function emptyFeed() {
-    // Creates the list.
-    let list = document.createElement("li");
-    list.classList.add("post");
-    list.setAttribute("data-id-feed","");
-
-    // Creates text stating feed is empty.
-    let empty = document.createElement("p");
-    let text = document.createTextNode("Currently your feed is empty.");
-
-    // Appends required elements.
-    empty.appendChild(text);
-    list.appendChild(empty);
-
-    return list;
+// Show modal with upvotes.
+function showUpvotes(event) {
+    if (event.target.id.includes("upVoteArrow-")
+        && !event.target.classList.contains("post-arrow-click")) {
+        // If adding an upvote.
+        genUpvotes("addVote", event.target.id);
+    } else if (event.target.id.includes("upVoteArrow-")
+        && event.target.classList.contains("post-arrow-click")) {
+        // If removing an upvote.
+        genUpvotes("removeVote", event.target.id);
+    } else {
+        // If displaying upvoters.
+        genUpvotes("showVotes", event.target.id);
+    }
 }
 
-// Gets posts for users not logged in.
-function getPostsPublic(uList) {
-    // Sets options to get public posts.
-    const options = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    }
+// Converts unix date to readable date.
+function getDate(unixDate) {
+    // Gets the day, month and year in form DD/MM/YYYY.
+    let year = unixDate.getFullYear();
+    let month = unixDate.getMonth();
+    if (month < 10) month = "0" + month;
+    let day = unixDate.getDate();
+    if (day < 10) day = "0" + day;
+    let date = day + "/" + month + "/" + year;
 
-    // The url for accessing public posts.
-    let publicPost = localStorage.getItem("api") + "/post/public";
-    // Fetches the actual posts, formats and displays them.
-    fetch(publicPost, options)
-        .then(response => response.json())
-        .then(response => {
-            // Cycles through all the posts and adds them to the page.
-            for (let i = 0; i < response.posts.length; i++) {
-                let post = createPost(response.posts[i])
-                appendContent(post, uList);
-            }
-        });
+    // Gets the time of post in 24-Hour time.
+    let hour = unixDate.getHours();
+    if (hour < 10) hour = "0" + hour;
+    let minutes = unixDate.getMinutes();
+    if (minutes < 10) minutes = "0" + minutes;
+    let time = hour + ":" + minutes;
+
+    // Returns the timestamp in form time on date.
+    return time + " on " + date;
 }
 
 // Gets posts for users logged in.
-function getPostsPrivate(uList) {
+function getPostsPrivate() {
+    const uList = document.getElementById("feed");
     // Gets request for posts as string with p giving current post number and
     // n being the number of posts to fetch following p.
     let request = "?p=" + localStorage.getItem("currPost") + "&n=" + "5";
@@ -314,24 +303,9 @@ function getPostsPrivate(uList) {
         .then(response => response.json())
         .then(response => {
             for (let i = 0; i < response.posts.length; i++) {
+                // Adds the post to the end of the feed.
                 let post = createPost(response.posts[i]);
                 appendContent(post, uList);
-
-                // Sets event listener so user can upvote a post.
-                let arrowVote = document
-                    .getElementById("upVoteArrow-" + response.posts[i].id);
-                arrowVote.addEventListener("click", showUpvotes);
-
-                // Sets event listener so user can view who upvoted that post.
-                let postVote = document
-                    .getElementById("vote-" + response.posts[i].id);
-                postVote.addEventListener("click", showUpvotes);
-
-                // Sets event listener so user can view who commented on that
-                // post.
-                let comment = document
-                    .getElementById("comments-" + response.posts[i].id);
-                comment.addEventListener("click", showComment);
             }
             // Generates empty feed if user has no posts.
             if (response.posts.length == 0) {
@@ -341,54 +315,49 @@ function getPostsPrivate(uList) {
         });
 }
 
-// Show modal with upvotes.
-function showUpvotes(event) {
-    if (event.target.id.includes("upVoteArrow-")
-        && !event.target.classList.contains("post-arrow-click")) {
-        // If adding an upvote.
-        genUpvotes("addVote", event.target.id);
-    } else if (event.target.id.includes("upVoteArrow-")
-        && event.target.classList.contains("post-arrow-click")) {
-        // If removing an upvote.
-        genUpvotes("removeVote", event.target.id);
-    } else {
-        // If displaying upvoters.
-        genUpvotes("showVotes", event.target.id);
+// Removes the current feed.
+function removeCurrentFeed() {
+    let list = document.getElementById("feed");
+    let main = document.getElementById("main");
+
+    main.removeChild(list);
+
+    // Creates the unordered list.
+    let uList = document.createElement("ul");
+    uList.id = "feed";
+    uList.setAttribute("data-id-feet","");
+
+    // Appends required elements to other elements to generate the feed.
+    main.appendChild(uList);
+    let element = document.getElementById("root");
+    element.appendChild(main);
+}
+
+// Appends a post to the beginning of the feed.
+function appendPost(postID) {
+    console.log("Addind new post to feed");
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
     }
+    // The url for accessing a post of a particular id.
+    let postAuth = localStorage.getItem("api") + "/post/?id=" + postID.post_id;
+
+    // Fetches the post.
+    fetch(postAuth, options)
+        .then(response => response.json())
+        .then(post => {
+            // Creates a section for the post and adds it to the top of the
+            // feed.
+            let postDiv = createPost(post);
+            let uList = document.getElementById("feed");
+            uList.insertBefore(postDiv, uList.childNodes[0]);
+        });
 }
-
-// Show modal with comments.
-function showComment(event) {
-    genComments("showComments", event.target.id);
-}
-
-// Converts unix date to readable date.
-function getDate(unixDate) {
-    // Gets the day, month and year in form DD/MM/YYYY.
-    let year = unixDate.getFullYear();
-    let month = unixDate.getMonth();
-    if (month < 10) month = "0" + month;
-    let day = unixDate.getDate();
-    if (day < 10) day = "0" + day;
-    let date = day + "/" + month + "/" + year;
-
-    // Gets the time of post in 24-Hour time.
-    let hour = unixDate.getHours();
-    if (hour < 10) hour = "0" + hour;
-    let minutes = unixDate.getMinutes();
-    if (minutes < 10) minutes = "0" + minutes;
-    let time = hour + ":" + minutes;
-
-    // Returns the timestamp in form time on date.
-    return time + " on " + date;
-}
-
-// Appends to the current feed.
-function appendFeed() {
-    // Gets the list to append posts to.
-    let uList = document.getElementById("feed");
-    getPostsPrivate(uList);
-}
-
 
 export default genFeed;

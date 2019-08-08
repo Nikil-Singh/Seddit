@@ -257,3 +257,9 @@ footer > * {
 .profile-data {
     text-align-last: right;
 }
+
+.feed-header-padding {
+    padding-block-start: 5%;
+    padding-inline-start: 10%;
+    padding-inline-end: 10%;
+}

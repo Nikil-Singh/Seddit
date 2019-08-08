@@ -1,7 +1,7 @@
 // Written by Nikil Singh (z5209322)
 
-// Imported scripts.
-import refreshPage from './refresh.js'
+// Imports script
+import genFeed from './feed.js'
 
 // Generates the post modal.
 function genPost(item) {
@@ -166,11 +166,21 @@ function verifyPost() {
     // Clears any error messages left.
     clearErrorMessages();
 
-    // If there is an image.
     if (image.value != "") {
-        getImage(title.value, text.value, subseddit.value);
+        console.log("Image detected");
+        // Gets the file.
+        let file = document.querySelector('input[type=file]').files[0];
+        // Gets the image in base64 form.
+        getImage(file)
+            .then(image => {
+                // Edits base64 string into appropriate format.
+                let image64 = image.replace("data:image/png;base64,", "");
+                // Uploads the post.
+                uploadPost(title.value, text.value, subseddit.value, image64);
+            })
     // If there is no image.
     } else {
+        // Uploads the post.
         uploadPost(title.value, text.value, subseddit.value, "");
     }
 }
@@ -183,36 +193,13 @@ function clearErrorMessages() {
     document.getElementById("post-error-image").innerText = "";
 }
 
-function getImage(title, text, subseddit) {
-    // Gets the file
-    //document.querySelector('input[type=file]').files[0];
-    /*
-    return document.querySelector('input[type=file]').files[0]
-        .then(response => response.blob())
-        .then(blob => new Promise((resolve, reject) => {
-            // Sets up the reader.
-            let reader = new FileReader();
-            // Converts the file into base64.
-            reader.onloadend = () => resolve(reader.result)
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        }));
-    */
-    let file = document.querySelector('input[type=file]').files[0];
-    let reader = new FileReader();
-    let imageResult = "";
-    reader.readAsDataURL(file);
-    reader.onload = function(e) {
-        // Extracts the base64 string of image.
-        imageResult = reader.result.replace("data:image/png;base64,", "");
-        uploadPost(title, text, subseddit, imageResult);
-    };
-}
-
-// Sleeps till function has resolved.
-function sleep(time) {
+// Returns the file as a base64 string.
+function getImage(file) {
     return new Promise((resolve, reject) => {
-        setTimeout(function(){resolve(time);}, time);
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
     });
 }
 
@@ -244,19 +231,19 @@ function uploadPost(title, text, subseddit, imageResult) {
         .then(response => response.json())
         .then(data => {
             // Refreshes feed and resets post modal.
-            successfulPost()
+            successfulPost(data);
         })
         .catch(error => {
             // Lets user try to reupload post again.
             failedPost(error);
         });
-
 }
 
 // Handles any errors sent back from backend.
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
+        console.log("Posting Fetch Error");
         throw (response);
     }
     // Otherwise return the response.
@@ -264,18 +251,19 @@ function errors(response) {
 }
 
 // Handles a successful post.
-function successfulPost() {
-    console.log("GETS HERE")
+function successfulPost(postID) {
+    console.log("Successful Post");
     document.getElementById("post-modal").classList.toggle("show-modal");
-    refreshPage("post");
-    refreshPage("feed");
+    //refreshPage("post");
+    genFeed("newPost", postID);
+    
 }
 
 // Handles a failed post along with errors.
 function failedPost(error) {
+    console.log("Failed Post");
     let imageError = document.getElementById("post-error-image");
     imageError.innerText = "Malformed Request / Image could not be processed";
 }
-
 
 export default genPost;

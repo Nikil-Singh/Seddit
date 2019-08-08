@@ -6,3 +6,8 @@ Date         Start   End     Comment
 30/07/19     15:00   18:00   Feed now displays public posts, and made improvements to the UI.
 31/07/19     17:00   19:00   Finished implementing login and implemented signed in posts.
 01/08/19     09:00   10:00   Implemented sign out.
+03/08/19     18:00   21:00   Can display feed for logged in users, and page no longer needs to reload after any action.
+04/08/19     19:00   21:00   Created modal for viewing upvotes and comments.
+05/08/19     11:00   16:00   Upvote and comment modals now display required data and readjusted a few sections to improve readability.
+05/08/19     18:00   21:00   Can now upvote posts and created modal to enter post data to submit.
+06/08/19     10:00   12:30   Can now make posts.
