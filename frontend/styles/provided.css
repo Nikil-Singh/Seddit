@@ -269,3 +269,15 @@ footer > * {
 .comment-text-button {
     display: inline;
 }
+
+.user-posts {
+    overflow: scroll;
+    max-height: 80%;
+    background-color: white;
+}
+
+.follow-button {
+    float: right;
+    text-align: center;
+    cursor: pointer;
+}

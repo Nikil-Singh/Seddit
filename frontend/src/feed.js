@@ -24,6 +24,8 @@ function genFeed(item, postID) {
         removeCurrentFeed();
     } else if (item == "newPost") {
         appendPost(postID);
+    } else if (item == "returnPost") {
+        return createPost(postID);
     }
 }
 
@@ -203,6 +205,7 @@ function createPost(postData) {
 
     // Holds author for post.
     let author = document.createElement("p");
+    author.id = "post-author-" + postData.id;
     author.classList.add("post-author");
     author.setAttribute("data-id-author","")
     let poster = document.createTextNode("Posted by @" + postData.meta.author);

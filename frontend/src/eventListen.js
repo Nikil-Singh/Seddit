@@ -8,6 +8,7 @@ import genFeed from './feed.js'
 import genUpvotes from './upvotes.js'
 import genComments from './comments.js'
 import genPost from './post.js'
+import genPages from './userPages.js'
 
 // Event Listeners.
 function eventListen() {
@@ -30,6 +31,8 @@ function eventListen() {
     const closeUpvote = document.getElementById("upvotes-modal-close");
     const closeComments = document.getElementById("comments-modal-close");
     const submitComment = document.getElementById("comment-submit");
+    const userPageClose = document.getElementById("user-modal-close");
+    const followBTN = document.getElementById("follow-btn");
 
     // Gets required modals to be opened or closed.
     const loginModal = document.getElementById("login-modal");
@@ -39,6 +42,7 @@ function eventListen() {
     const commentsModal = document.getElementById("comments-modal");
     const postModal = document.getElementById("post-modal");
     const profileUpdateModal = document.getElementById("update-profile-modal");
+    const userPageModal = document.getElementById("user-page-modal");
 
     // Checks if user is not logged in so it displays login otherwise if the
     // user is logged in then displays logout.
@@ -179,13 +183,13 @@ function eventListen() {
         genPost("clearErrors");
     })
 
-    // Closes the upvote modal.
+    // Event listener for closing the upvote modal.
     closeUpvote.addEventListener('click', function() {
         console.log("Closing Upvote Modal");
         upvoteModal.classList.toggle("show-modal");
     })
 
-    // Closes the upvote modal.
+    // Event listener for closing the comments modal.
     closeComments.addEventListener('click', function() {
         console.log("Closing Comment Modal");
         commentsModal.classList.toggle("show-modal");
@@ -195,11 +199,25 @@ function eventListen() {
         genComments("clearErrors");
     })
 
-    // Submits comment made.
+    // Event listener for submitting a comment made.
     submitComment.addEventListener('click', function() {
         console.log("Submiting comment");
         // Submits comment to be verified then submitted if correct.
         genComments("makeComment");
+    })
+
+    // Event listener for closing the user pages modal.
+    userPageClose.addEventListener('click', function() {
+        console.log("Closing User Pages Modal");
+        userPageModal.classList.toggle("show-modal");
+        genPages("refreshPost");
+        localStorage.removeItem("userPageUsername");
+    })
+
+    // Event listener for following and unfollowing a user.
+    followBTN.addEventListener('click', function() {
+        console.log("Following/Unfollowing User");
+        
     })
 
     // Used to listen to events related to dynamically created posts.
@@ -222,7 +240,15 @@ function eventListen() {
             if (localStorage.getItem("token") !== null) {
                 showComment(e);
             }
+        } else if (e.target.id.includes("post-author-")) {
+            console.log("Clicked author " + e.target.id);
+            if (localStorage.getItem("token") !== null) {
+                genPages("refreshPost");
+                genPages("populate", e.target.innerText);
+                userPageModal.classList.toggle("show-modal");
+            }
         }
+
     });
 }
 

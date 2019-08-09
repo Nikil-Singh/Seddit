@@ -219,7 +219,7 @@ function createInputTextbox(itemName) {
 // Populates the profile modal with required user information.
 function populateProfileModal() {
     console.log("Populating Profile Modal");
-    // Sets options to get post details.
+    // Sets options to get certain details.
     let tokenString = "Token " + localStorage.token;
     const options = {
         method: 'GET',
