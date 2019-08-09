@@ -77,6 +77,21 @@ function createProfileModal() {
     let following = profileInfoPara("Total Number of People Following: ", "following");
     // Creates a button for updating profile.
     let button = updateProfileButton();
+    // Creates a button for viewing, editing and deleting posts.
+    let editPostBTN = editPostButton();
+
+    // Creates a division to display posts.
+    let followingBox = document.createElement("div");
+    followingBox.classList.add("user-posts");
+    followingBox.id = "profile-following-div";
+
+    let p = document.createElement("p");
+    p.innerText = "Following";
+    let ul = document.createElement("ul");
+    ul.id = "profile-following-list";
+
+    followingBox.appendChild(p);
+    followingBox.appendChild(ul);
 
     contentBox.appendChild(closeBTN);
     contentBox.appendChild(headerElement);
@@ -87,6 +102,8 @@ function createProfileModal() {
     contentBox.appendChild(followers);
     contentBox.appendChild(following);
     contentBox.appendChild(button);
+    contentBox.appendChild(editPostBTN);
+    contentBox.appendChild(followingBox);
     box.appendChild(contentBox);
 
     let element = document.getElementById("root");
@@ -145,6 +162,19 @@ function createCloseButton(item) {
     closeBTN.classList.add("close-button");
     closeBTN.id = item + "close";
     return closeBTN
+}
+
+// Creates a button to allow access to a users posts for editing or deletion.
+function editPostButton() {
+    let button = document.createElement("button");
+    let btnDiv = document.createElement("div");
+    let text = document.createTextNode("Edit Posts");
+    button.id = "profile-view-posts";
+    button.classList.add("button", "button-secondary");
+    button.appendChild(text);
+    btnDiv.classList.add("modal-content-items");
+    btnDiv.appendChild(button);
+    return btnDiv;
 }
 
 // Creates a paragraph section for information on profile.
@@ -252,11 +282,28 @@ function populateProfileModal() {
                 post = localStorage.getItem("api") + "/post/?id=" + data.posts[i];
                 fetch(post, options)
                     .then(response => response.json())
-                    .then(data => {
+                    .then(postData => {
                         // Increments total upvotes straight to modal.
-                        upvote.innerText = Number(upvote.innerText) + data.meta.upvotes.length;
+                        upvote.innerText = Number(upvote.innerText) + postData.meta.upvotes.length;
                     });
             }
+
+            // Gets all the users that the logged in user if following.
+            let followingList = document.getElementById("profile-following-list");
+            let followingAuth = "";
+            // Cycles through all users the user is following.
+            for (let i = 0; i < data.following.length; i++) {
+                followingAuth = localStorage.getItem("api") + "/user/?id=" + data.following[i];
+                fetch(followingAuth, options)
+                    .then(response => response.json())
+                    .then(followData => {
+                        let followerName = document.createElement("p");
+                        followerName.innerText = followData.username;
+                        followingList.appendChild(followerName);
+                    });
+
+            }
+
         });
 }
 
@@ -366,6 +413,12 @@ function refreshProfileModal() {
     document.getElementById("profile-followers").innerText = "";
     document.getElementById("profile-following").innerText = "";
     document.getElementById("profile-totalUpvotes").innerText = "";
+    let div = document.getElementById("profile-following-div");
+    let ul = document.getElementById("profile-following-list");
+    div.removeChild(ul);
+    let newUl = document.createElement("ul");
+    newUl.id = "profile-following-list";
+    div.appendChild(newUl);
 }
 
 // Refreshes the update profile modal.

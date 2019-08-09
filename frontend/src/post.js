@@ -26,7 +26,7 @@ function createPostModal() {
     contentBox.classList.add("modal-content");
     contentBox.id = "post-content-modal";
 
-    // Creates the username and password post boxes along with form.
+    // Creates the title, text and subseddit post boxes along with form.
     let form = document.createElement("form");
     form.id = "post-form";
     let title = createInputTextbox("title");
@@ -256,7 +256,7 @@ function successfulPost(postID) {
     document.getElementById("post-modal").classList.toggle("show-modal");
     //refreshPage("post");
     genFeed("newPost", postID);
-    
+
 }
 
 // Handles a failed post along with errors.

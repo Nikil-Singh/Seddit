@@ -14,6 +14,7 @@ import genUpvotes from './upvotes.js'
 import genComments from './comments.js'
 import genPost from './post.js'
 import genPages from './userPages.js'
+import genModDelPost from './modifyPost.js'
 import eventListen from './eventListen.js'
 import scroll from './scroll.js'
 
@@ -31,6 +32,7 @@ function initApp(apiUrl) {
     genLogin("generate");
     genSignup("generate");
     genProfile("generate");
+    genModDelPost("generate");
     genFeed("generate");
     genPages("generate");
     genUpvotes("generate");

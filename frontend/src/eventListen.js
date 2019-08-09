@@ -9,6 +9,8 @@ import genUpvotes from './upvotes.js'
 import genComments from './comments.js'
 import genPost from './post.js'
 import genPages from './userPages.js'
+import follow from './follow.js'
+import genModDelPost from './modifyPost.js'
 
 // Event Listeners.
 function eventListen() {
@@ -25,6 +27,10 @@ function eventListen() {
     const profileSubmit = document.getElementById("profile-update-submit");
     const profileUpdateClose = document.getElementById("update-profile-modal-close");
     const closeProfile = document.getElementById("profile-modal-close");
+    const viewPosts = document.getElementById("profile-view-posts");
+    const viewPostsClose = document.getElementById("all-posts-modal-close");
+    const updatePostBTN = document.getElementById("update-post-button");
+    const closeUpdatePost = document.getElementById("update-post-modal-close")
     const postBTN = document.getElementById("post-open-modal");
     const postSubmitBTN = document.getElementById("post-submit");
     const closePost = document.getElementById("post-modal-close");
@@ -38,12 +44,13 @@ function eventListen() {
     const loginModal = document.getElementById("login-modal");
     const signupModal = document.getElementById("signup-modal");
     const profileModal = document.getElementById("profile-modal");
-    const upvoteModal = document.getElementById("upvotes-modal")
+    const viewPostsModal = document.getElementById("all-posts-modal");
+    const upvoteModal = document.getElementById("upvotes-modal");
     const commentsModal = document.getElementById("comments-modal");
     const postModal = document.getElementById("post-modal");
     const profileUpdateModal = document.getElementById("update-profile-modal");
     const userPageModal = document.getElementById("user-page-modal");
-
+    const editPostModal = document.getElementById("update-post-modal");
     // Checks if user is not logged in so it displays login otherwise if the
     // user is logged in then displays logout.
     if (localStorage.getItem("token") === null) {
@@ -159,6 +166,20 @@ function eventListen() {
         genProfile("refresh");
     })
 
+    // Event listener for viewing all posts.
+    viewPosts.addEventListener('click', function() {
+        console.log("View Posts");
+        genModDelPost("populatePostsModal");
+        viewPostsModal.classList.toggle("show-modal");
+    })
+
+    // Event listener for closing all posts modal
+    viewPostsClose.addEventListener('click', function() {
+        console.log("Closing All Posts Modal");
+        viewPostsModal.classList.toggle("show-modal");
+        genModDelPost("refreshViewModal");
+    })
+
     // Event listener for opening post modal.
     postBTN.addEventListener('click', function() {
         console.log("Post Button");
@@ -217,7 +238,19 @@ function eventListen() {
     // Event listener for following and unfollowing a user.
     followBTN.addEventListener('click', function() {
         console.log("Following/Unfollowing User");
-        
+        follow("[un]follow");
+    })
+
+    // Event listener for submitting updates to the post.
+    updatePostBTN.addEventListener('click', function(e) {
+        console.log("Update Post");
+        e.preventDefault();
+    })
+
+    // Event listener to close update post modal.
+    closeUpdatePost.addEventListener('click', function() {
+        console.log("Closing Update Post Modal");
+        editPostModal.classList.toggle("show-modal");
     })
 
     // Used to listen to events related to dynamically created posts.
@@ -238,14 +271,28 @@ function eventListen() {
         } else if (e.target.id.includes("comments-post-")) {
             console.log("Clicked comments " + e.target.id);
             if (localStorage.getItem("token") !== null) {
+                // Shows the comments for required post.
                 showComment(e);
             }
         } else if (e.target.id.includes("post-author-")) {
             console.log("Clicked author " + e.target.id);
             if (localStorage.getItem("token") !== null) {
+                // Shows the users page, with their details and posts.
                 genPages("refreshPost");
                 genPages("populate", e.target.innerText);
                 userPageModal.classList.toggle("show-modal");
+            }
+        } else if (e.target.id.includes("edit-posts-btn-")) {
+            if (localStorage.getItem("token") !== null) {
+                // Open modal to edit post.
+                console.log("Edit Post");
+                editPostModal.classList.toggle("show-modal");
+            }
+        } else if (e.target.id.includes("delete-posts-btn-")) {
+            if (localStorage.getItem("token") !== null) {
+                // Deletes the actual post.
+                console.log("Delete Post");
+                genModDelPost("deletePost", e.target.id);
             }
         }
 
