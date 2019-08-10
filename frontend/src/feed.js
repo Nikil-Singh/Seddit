@@ -19,12 +19,14 @@ function genFeed(item, postID) {
     } else if (item == "morePrivate") {
         // Add more to the feed.
         getPostsPrivate();
-        //appendFeed();
     } else if (item == "removeCurrentFeed") {
+        // Removes the current feed.
         removeCurrentFeed();
     } else if (item == "newPost") {
+        // Appends a particular post.
         appendPost(postID);
     } else if (item == "returnPost") {
+        // Creates and returns a post.
         return createPost(postID);
     }
 }
@@ -134,7 +136,6 @@ function emptyFeed() {
 
 // Creates required HTML for one post.
 function createPost(postData) {
-    //console.log(postData);
     // Creates the list to hold elements of post.
     let list = document.createElement("li");
     list.classList.add("post");
@@ -179,7 +180,7 @@ function createPost(postData) {
 
     // Holds subseddit of post.
     let subseddit = document.createElement("h4");
-    subseddit.classList.add("post-title", "alt-text");
+    subseddit.classList.add("post-subseddit", "alt-text");
     let sSeddit = document.createTextNode("s/" + postData.meta.subseddit);
     subseddit.appendChild(sSeddit);
 
@@ -215,6 +216,7 @@ function createPost(postData) {
     let timestamp = getDate(new Date(postData.meta.published * 1000));
     let time = document.createElement("p");
     time.innerText = timestamp;
+    time.classList.add("post-date");
 
     // Holds the number of comments on post.
     let comments = document.createElement("p");
@@ -320,20 +322,10 @@ function getPostsPrivate() {
 
 // Removes the current feed.
 function removeCurrentFeed() {
-    let list = document.getElementById("feed");
+    // Gets the required elements.
+    let uList = document.getElementById("feed");
     let main = document.getElementById("main");
-
-    main.removeChild(list);
-
-    // Creates the unordered list.
-    let uList = document.createElement("ul");
-    uList.id = "feed";
-    uList.setAttribute("data-id-feet","");
-
-    // Appends required elements to other elements to generate the feed.
-    main.appendChild(uList);
-    let element = document.getElementById("root");
-    element.appendChild(main);
+    while (uList.hasChildNodes()) uList.removeChild(uList.firstChild);
 }
 
 // Appends a post to the beginning of the feed.

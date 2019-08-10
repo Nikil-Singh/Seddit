@@ -58,11 +58,14 @@ function createUserModal() {
     postBox.classList.add("user-posts");
     postBox.id = "user-posts-div";
 
+    // Creates a text element.
     let p = document.createElement("p");
     p.innerText = "User Posts";
+    p.classList.add("bold-text");
     let ul = document.createElement("ul");
     ul.id = "user-page-posts";
 
+    // Appends required elements to each other.
     postBox.appendChild(ul);
 
     contentBox.appendChild(closeBTN);
@@ -95,7 +98,7 @@ function createCloseButton(item) {
 // Creates a button to follow or unfollow that user.
 function createFollowButton() {
     let btn = document.createElement("button");
-    btn.classList.add("button", "button-secondary");
+    btn.classList.add("button", "button-secondary", "follow-button");
     btn.id = "follow-btn";
     let btnText = document.createTextNode("Follow");
     btn.appendChild(btnText);
@@ -153,8 +156,10 @@ function populateUserPageModal(item) {
                 .then(reply => reply.json())
                 .then(newData => {
                     if (newData.following.includes(data.id)) {
+                        // If user is followed.
                         document.getElementById("follow-btn").innerText = "Unfollow";
                     } else {
+                        // If user is not followed.
                         document.getElementById("follow-btn").innerText = "Follow";
                     }
                 });

@@ -9,12 +9,13 @@ function scroll() {
     window.addEventListener("scroll", function() {
         // Gets the beginning of the feed.
         let feed = document.getElementById("feed");
-        // Gets height of the top of the feed.
+        // Gets window vertical height of window.
+        let windowHeight = window.pageYOffset;
+        // Gets the vertical height of the top of the feed.
         let height = feed.offsetHeight;
-        // Gets offset height of window.
-        let offsetHeight = window.pageYOffset;
         // Sums the window offset height with the windows inner height.
-        let total = offsetHeight + window.innerHeight;
+        let total = windowHeight + window.innerHeight;
+        // If amount scrolled down exceeds height.
         if (total >= height) {
             // Adds more posts to bottom of page.
             console.log("Scroll is adding more posts.");

@@ -262,12 +262,13 @@ footer > * {
 
 .feed-header-padding {
     padding-block-start: 5%;
-    padding-inline-start: 10%;
-    padding-inline-end: 10%;
+    padding-inline-start: 20%;
+    padding-inline-end: 20%;
 }
 
 .comment-text-button {
     display: inline;
+    margin: 2px;
 }
 
 .user-posts {
@@ -280,4 +281,31 @@ footer > * {
     float: right;
     text-align: center;
     cursor: pointer;
+}
+
+.preview-image {
+    padding: 5px 1px;
+    width: 55%;
+    height: auto;
+}
+
+.post-date {
+    font-size: 13px;
+}
+
+.post-subseddit {
+    font-size: 14px;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+.update-post-btn {
+    display: block;
+    margin: 2px;
+}
+
+.profile-button {
+    width: 100%;
 }

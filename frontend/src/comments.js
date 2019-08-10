@@ -3,13 +3,17 @@
 // Generates the comments modal.
 function genComments(item, postID) {
     if (item == "generate") {
+        // Creates the comments modal.
         createCommentsModal();
     } else if (item == "showComments") {
+        // Refreshes the comment modal and loads new comments.
         refreshComments()
         showComments(postID);
     } else if (item == "makeComment") {
+        // Checks comment to make is valid and submits it.
         verifyComment();
     } else if (item == "clearErrors") {
+        // Clears error messages on modal.
         clearErrorMessages();
     }
 }
@@ -69,6 +73,7 @@ function commentTextBox() {
     element.classList.add("modal-textbox", "comment-text-button");
     element.placeholder = "Enter Comment Here";
 
+    // Creates a section for error messages.
     let errorText = document.createElement("p");
     let errorT = document.createTextNode("");
     errorText.classList.add("textbox-error");
@@ -114,10 +119,12 @@ function showComments(postID) {
     fetch(comments, options)
         .then(response => response.json())
         .then(data => {
+            // Displays the comments on modal.
             displayComments(data.comments);
         });
-    let commentModal = document.getElementById("comments-modal");
 
+    // Displays comments modal if comments modal isn't already displayed.
+    let commentModal = document.getElementById("comments-modal");
     if (!commentModal.classList.contains("show-modal")) {
         commentModal.classList.toggle("show-modal");
     }
@@ -132,7 +139,6 @@ function displayComments(commenters) {
         // Appends user comment to list of comments.
         ul.appendChild(userLi);
     }
-
 }
 
 // Create a comment.
@@ -220,7 +226,7 @@ function verifyComment() {
     clearErrorMessages();
 
     // Checks if no comment was entered.
-    if (comment === '') {
+    if (comment.trim() === '') {
         let element = document.getElementById("comments-error");
         element.innerText = "Comment must have more than one character";
         authenticate = 0;
@@ -231,6 +237,7 @@ function verifyComment() {
     // Clears any error messages left.
     clearErrorMessages();
 
+    // Adds the comment.
     addComment(comment);
 }
 
@@ -258,6 +265,7 @@ function addComment(comment) {
         },
         body: JSON.stringify(payload)
     }
+    // Gets the ID for the post to comment on.
     let commentID = localStorage.getItem("commentID");
     commentID = commentID.substring(14, commentID.length);
     // Is the URL for fetching login.
@@ -274,9 +282,8 @@ function addComment(comment) {
             document.getElementById("comments-post-" + commentID)
                 .innerText = number + " Comments";
 
-            console.log("Total Number of Comments for Post is: " + number);
-
             // Updates the comment modal to display comments.
+            document.getElementById("comment-textbox").value = "";
             refreshComments()
             showComments("comments-post-" + commentID);
         });

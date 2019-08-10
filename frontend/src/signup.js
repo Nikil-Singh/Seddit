@@ -172,7 +172,7 @@ function verifyRegister() {
     if (authenticate == 0) return;
     // Clears any error messages left.
     clearErrorMessages();
-
+    // Signs the user up.
     signupUser(username.value, password.value, email.value, name.value);
 }
 
@@ -244,17 +244,22 @@ function successfulSignup(data) {
     getCurrentUserID();
 
     // Refreshes the navigation bar, feed, login and signup modals.
+    // Toggles button display.
     document.getElementById("login-btn").classList.toggle("button-display");
     document.getElementById("logout-btn").classList.toggle("button-display");
     document.getElementById("signup-btn").classList.toggle("button-display");
     document.getElementById("profile-view").classList.toggle("button-display");
+    // Sets value of signup modal to be empty string.
+    document.getElementById("signup-username").value = "";
+    document.getElementById("signup-password").value = "";
+    document.getElementById("signup-email").value = "";
+    document.getElementById("signup-name").value = "";
+    // Removes the previous feed and adds a new logged in feed.
     console.log("Removing Previous Feed");
     genFeed("removeCurrentFeed");
     document.getElementById("post-open-modal").classList.toggle("button-display");
     console.log("Getting New Feed");
     genFeed("morePrivate");
-    //refreshPage("feed");
-    //refreshPage("login/signup");
 }
 
 // Handles a failed signup.
@@ -292,4 +297,5 @@ function getCurrentUserID() {
             localStorage.setItem("userID", data.id);
         });
 }
+
 export default genSignup;

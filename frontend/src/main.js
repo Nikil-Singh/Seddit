@@ -4,6 +4,8 @@
  * Updated 2019.
  */
 
+ // Written by Nikil Singh (z52209322)
+
 // import your own scripts here.
 import genNavBar from './navbar.js'
 import genLogin from './login.js'
@@ -15,6 +17,7 @@ import genComments from './comments.js'
 import genPost from './post.js'
 import genPages from './userPages.js'
 import genModDelPost from './modifyPost.js'
+import genSearch from './search.js'
 import eventListen from './eventListen.js'
 import scroll from './scroll.js'
 
@@ -29,6 +32,7 @@ function initApp(apiUrl) {
     // Initialises the page.
     console.log("Initialises");
     genNavBar();
+    genSearch("generate");
     genLogin("generate");
     genSignup("generate");
     genProfile("generate");

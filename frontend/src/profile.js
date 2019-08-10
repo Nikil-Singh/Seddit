@@ -85,11 +85,13 @@ function createProfileModal() {
     followingBox.classList.add("user-posts");
     followingBox.id = "profile-following-div";
 
+    // Creates text element.
     let p = document.createElement("p");
     p.innerText = "Following";
     let ul = document.createElement("ul");
     ul.id = "profile-following-list";
 
+    // Appends required elements to each other.
     followingBox.appendChild(p);
     followingBox.appendChild(ul);
 
@@ -170,7 +172,7 @@ function editPostButton() {
     let btnDiv = document.createElement("div");
     let text = document.createTextNode("Edit Posts");
     button.id = "profile-view-posts";
-    button.classList.add("button", "button-secondary");
+    button.classList.add("button", "button-secondary", "profile-button");
     button.appendChild(text);
     btnDiv.classList.add("modal-content-items");
     btnDiv.appendChild(button);
@@ -199,7 +201,7 @@ function updateProfileButton() {
     let btnDiv = document.createElement("div");
     let text = document.createTextNode("Update Profile");
     button.id = "profile-update";
-    button.classList.add("button", "button-secondary");
+    button.classList.add("button", "button-secondary", "profile-button");
     button.appendChild(text);
     btnDiv.classList.add("modal-content-items");
     btnDiv.appendChild(button);
@@ -231,6 +233,8 @@ function createInputTextbox(itemName) {
     element.id = "profile-update-" + itemName;
     element.classList.add("modal-textbox");
     if (itemName == "password") element.type = "password";
+
+    // Handles error text.
     let errorText = document.createElement("p");
     let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
@@ -407,12 +411,15 @@ function updateProfile(email, name, password) {
 
 // Refreshes the profile modal of all previous data.
 function refreshProfileModal() {
+    // Resets profile information text to be empty string.
     document.getElementById("profile-username").innerText = "";
     document.getElementById("profile-name").innerText = "";
     document.getElementById("profile-numPosts").innerText = "";
     document.getElementById("profile-followers").innerText = "";
     document.getElementById("profile-following").innerText = "";
     document.getElementById("profile-totalUpvotes").innerText = "";
+
+    // Creates division to hold a new list.
     let div = document.getElementById("profile-following-div");
     let ul = document.getElementById("profile-following-list");
     div.removeChild(ul);

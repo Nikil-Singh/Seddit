@@ -3,13 +3,17 @@
 // Generates the upvotes modal.
 function genUpvotes(item, postID) {
     if (item == "generate") {
+        // Creates the upvote modal.
         createUpvotesModal();
     } else if (item == "showVotes") {
+        // Show the up voter for a post.
         refreshUpvotes();
         showVotes(postID);
     } else if (item == "addVote") {
+        // Adds an upvote.
         changeVote(postID, "PUT");
     } else if (item == "removeVote") {
+        // Removes an upvote.
         changeVote(postID, "DELETE");
     }
 }
@@ -103,6 +107,7 @@ function displayVotes(votersID) {
         fetch(user, options)
             .then(response => response.json())
             .then(data => {
+                // Adds username to upvote.
                 addUserNameUpvote(data);
             });
     }

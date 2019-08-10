@@ -250,6 +250,8 @@ function successfulLogin(data) {
     document.getElementById("post-open-modal").classList.toggle("button-display");
     console.log("Getting New Feed");
     genFeed("morePrivate");
+    document.getElementById("login-username").value = "";
+    document.getElementById("login-password").value = "";
     //refreshPage("feed");
     //refreshPage("login/signup");
 }
@@ -273,7 +275,7 @@ function failedLogin(error) {
 // Gets the current user's ID.
 function getCurrentUserID() {
     console.log("Adding current user id to local storage.")
-    // Sets options to get post details.
+    // Sets options to get user details.
     let tokenString = "Token " + localStorage.token;
     const options = {
         method: 'GET',

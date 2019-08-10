@@ -22,6 +22,15 @@ function genModDelPost(command, item) {
     } else if (command == "deletePost") {
         // Deletes the post.
         deletePost(item);
+    } else if (command == "populateUpdateModal") {
+        // Populates the modal to hold data for that post.
+        populateUpdateModal(item);
+    } else if (command == "updatePost") {
+        // Updates the post.
+        verifyPost();
+    } else if (command == "clearErrorMessages"){
+        // Clears error messages from modal.
+        clearErrorMessages();
     }
 }
 
@@ -50,6 +59,7 @@ function createSelectPostModal() {
     let ul = document.createElement("ul");
     ul.id = "all-posts-list";
 
+    // Appends required elements to required elements.
     contentBox.appendChild(closeBTN);
     contentBox.appendChild(headerElement);
     contentBox.appendChild(ul);
@@ -80,7 +90,7 @@ function createUpdateModal() {
     let closeBTN = createCloseButton("update-post-modal-");
 
     // Creates a button to submit changes made to post.
-    let button = updatePostBTN();
+    let updateBTN = updatePostBTN();
 
     // Creates the textboxes to update the post.
     let form = document.createElement("form");
@@ -88,8 +98,16 @@ function createUpdateModal() {
     let title = createInputTextbox("title");
     let text = createInputTextbox("text");
 
+    // Creates a section for image preview if there previously was an image.
+    let imgSection = document.createElement("img");
+    imgSection.id = "update-post-image-preview";
+    imgSection.classList.add("preview-image");
+
     // Creates a section to submit an image.
     let image = createImageSubmit();
+
+    // Creates a button to remove image if it exists.
+    let remImageBTN = removeImageBTN();
 
     // Appends required elements to different elements to form modal.
     contentBox.appendChild(closeBTN);
@@ -97,7 +115,9 @@ function createUpdateModal() {
     contentBox.appendChild(title);
     contentBox.appendChild(text);
     contentBox.appendChild(image);
-    contentBox.appendChild(button);
+    contentBox.appendChild(imgSection);
+    contentBox.appendChild(remImageBTN);
+    contentBox.appendChild(updateBTN);
     box.appendChild(contentBox);
     form.appendChild(box);
     let element = document.getElementById("root");
@@ -108,7 +128,7 @@ function createUpdateModal() {
 // Creates the submit button for updating post.
 function updatePostBTN() {
     let btn = document.createElement("button");
-    btn.classList.add("button", "button-secondary");
+    btn.classList.add("button", "button-secondary", "update-post-btn");
     btn.id = "update-post-button";
     let btnText = document.createTextNode("Update");
     btn.appendChild(btnText);
@@ -116,23 +136,39 @@ function updatePostBTN() {
     return btn;
 }
 
+// Removes any image from update post modal.
+function removeImageBTN() {
+    let btn = document.createElement("button");
+    btn.classList.add("button", "button-secondary", "update-post-btn");
+    btn.id = "update-rem-image-button";
+    let btnText = document.createTextNode("Remove Image");
+    btn.appendChild(btnText);
+
+    return btn;
+}
+
 // Creates a div to hold the inputting images.
 function createImageSubmit() {
+    // Creates a div to hold image.
     let div = document.createElement("div");
 
+    // Creates section to submit image.
     let image = document.createElement("INPUT");
     image.setAttribute("type", "file");
     image.id = "update-post-image";
 
+    // Creates section for text on details of how to submit.
     let imageText = document.createElement("p");
-    imageText.innerText = "(Optional) Select Image to Upload"
+    imageText.innerText = "(Optional) Select image to upload, if left empty the original will stay"
 
+    // Holds the error text.
     let errorText = document.createElement("p");
     let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
-    errorText.id = "update-post-error-image";
+    errorText.id = "post-update-error-image";
 
+    // Appends required elements together.
     div.appendChild(imageText);
     div.appendChild(image);
     div.appendChild(errorText);
@@ -164,7 +200,7 @@ function createInputTextbox(itemName) {
     let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
-    errorText.id = "post-error-" + itemName;
+    errorText.id = "post-update-error-" + itemName;
 
     // Creates div for element so they can stack.
     let div = document.createElement("div");
@@ -202,6 +238,8 @@ function populateViewModal() {
                 fetch(post, options)
                     .then(response => response.json())
                     .then(postData => {
+                        // Creates the required division to hold a post and
+                        // buttons for editing and deleting post.
                         let div = document.createElement("div");
                         div.id = "all-posts-post-" + data.posts[i];
                         div.appendChild(genFeed("returnPost", postData));
@@ -257,6 +295,187 @@ function deletePost(postID) {
                 feed.removeChild(feedPost);
             }
         });
+}
+
+// Populates the update modal for that posts data.
+function populateUpdateModal(postID) {
+    // Extracts the post ID.
+    let id = postID.substring(15, postID.length);
+    console.log("Populating Update Post Modal");
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        }
+    }
+    // The url for accessing a post of a particular id.
+    let postAuth = localStorage.getItem("api") + "/post/?id=" + id;
+
+    // Fetches the post.
+    fetch(postAuth, options)
+        .then(response => response.json())
+        .then(post => {
+            // Populates the update modal with required data.
+            document.getElementById("post-update-title").value = post.title;
+            document.getElementById("post-update-text").value = post.text;
+            // Checks if post has image.
+            if (post.image != "" && post.image != null) {
+                document.getElementById("update-post-image-preview")
+                    .src = "data:image/png;base64," + post.image;
+            } else {
+                document.getElementById("update-post-image-preview")
+                    .src = "";
+            }
+        });
+}
+
+// Verifies the post is valid  and if so then updates the original post.
+function verifyPost() {
+    // Gets values stored for title, text, subseddit and image.
+    const title = document.getElementById("post-update-title");
+    const text = document.getElementById("post-update-text");
+    const image = document.getElementById("update-post-image");
+
+    // Variable to determine if any errors were found.
+    let authenticate = 1;
+    // Clears any prior error messages on modal.
+    clearErrorMessages();
+
+    // Checks if no username or password were given in form.
+    if (title.value === '') {
+        let element = document.getElementById("post-update-error-title");
+        element.innerText = "Title must have more than 0 characters";
+        authenticate = 0;
+    } else if (text.value === '') {
+        let element = document.getElementById("post-update-error-text");
+        element.innerText = "Text must have more than 0 characters";
+        authenticate = 0;
+    }
+
+    // Returns if there are any errors.
+    if (authenticate == 0) return;
+    // Clears any error messages left.
+    clearErrorMessages();
+
+    // If a new image was selected.
+    if (image.value != "") {
+        console.log("New Image detected");
+        // Gets the file from image selector.
+        let file = document.querySelector('input[type=file]').files[0];
+        getImage(file)
+            .then(image => {
+                // Edits base64 string into appropriate format.
+                let image64 = image.replace("data:image/png;base64,", "");
+                // Uploads the post.
+                updatePost(title.value, text.value, image64);
+            })
+    // If no new image was selected, and previous image was kept.
+} else if (document.getElementById("update-post-image-preview").value != "") {
+        console.log("Old Image detected");
+        // Gets the image from image preview.
+        let imagePrev = document.getElementById("update-post-image-preview").src;
+        imagePrev = imagePrev.replace("data:image/png;base64,", "");
+        updatePost(title.value, text.value, imagePrev);
+    // If there are no images.
+    } else {
+        console.log("No Image detected");
+        updatePost(title.value, text.value, "");
+    }
+}
+
+// Updates the post with the new given information.
+function updatePost(title, text, image) {
+    // Holds the parameters needed to call backend for login.
+    const payload = {
+        title: title,
+        text: text,
+        image: image
+    }
+
+    // Sets options to get post details.
+    let tokenString = "Token " + localStorage.token;
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': tokenString
+        },
+        body: JSON.stringify(payload)
+    }
+
+    let postID = localStorage.getItem("postEdit");
+    // The url for fetching post to update
+    let post = localStorage.getItem("api") + "/post/?id=" + postID;
+    fetch(post, options)
+        .then(response => errors(response))
+        .then(response => response.json())
+        .then(data => {
+            // Refreshes feed and resets post modal.
+            successfulPost(data);
+        })
+        .catch(error => {
+            // Lets user try to reupload post again.
+            failedPost(error);
+        });
+
+}
+
+// Handles any errors sent back from backend.
+function errors(response) {
+    // If there is an error.
+    if (!response.ok) {
+        console.log("Posting Update Fetch Error");
+        throw (response);
+    }
+    // Otherwise return the response.
+    return response;
+}
+
+// Handles a successful update post.
+function successfulPost(postID) {
+    document.getElementById("update-post-modal").classList.toggle("show-modal");
+    console.log("Successful Update to Post");
+
+    // Removes previous feed.
+    let uList = document.getElementById("feed");
+    while (uList.hasChildNodes()) uList.removeChild(uList.firstChild);
+
+    // Refreshes feed after changes made.
+    localStorage.setItem("currPost", 0);
+    genFeed("morePrivate");
+
+    // Refreshes required modals and repopulates them with data.
+    document.getElementById("all-posts-modal").classList.toggle("show-modal");
+    refreshViewPostsModal();
+    populateViewModal()
+    document.getElementById("all-posts-modal").classList.toggle("show-modal");
+}
+
+// Handles a failed update to post along with errors.
+function failedPost(error) {
+    console.log("Failed Update to Post");
+    let imageError = document.getElementById("post-update-error-image");
+    imageError.innerText = "Malformed Request / Image could not be processed";
+}
+
+// Gets rid of prior error messages if there no more errors.
+function clearErrorMessages() {
+    document.getElementById("post-update-error-title").innerText = "";
+    document.getElementById("post-update-error-text").innerText = "";
+    document.getElementById("post-update-error-image").innerText = "";
+}
+
+// Returns the file as a base64 string.
+function getImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // Refreshes the view posts modal.

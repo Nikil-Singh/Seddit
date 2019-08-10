@@ -6,10 +6,13 @@ import genFeed from './feed.js'
 // Generates the post modal.
 function genPost(item) {
     if (item == "generate") {
+        // Creates the modal to make posts from.
         createPostModal();
     } else if (item == "makePost") {
+        // Checks if post is valid, and if so then makes post.
         verifyPost();
     } else if (item == "clearErrors") {
+        // Clears error messages.
         clearErrorMessages();
     }
 }
@@ -111,21 +114,26 @@ function createCloseButton() {
 
 // Creates a div to hold the inputting images.
 function createImageSubmit() {
+    // Creates division to hold image submission.
     let div = document.createElement("div");
 
+    // Creates section to submit image.
     let image = document.createElement("INPUT");
     image.setAttribute("type", "file");
     image.id = "post-image";
 
+    // Creates section to hold text.
     let imageText = document.createElement("p");
     imageText.innerText = "(Optional) Select Image to Upload"
 
+    // Creates section to hold error message text.
     let errorText = document.createElement("p");
     let text = document.createTextNode("");
     errorText.classList.add("textbox-error");
     errorText.appendChild(text);
     errorText.id = "post-error-image";
 
+    // Appends required elements to each other.
     div.appendChild(imageText);
     div.appendChild(image);
     div.appendChild(errorText);
@@ -252,11 +260,18 @@ function errors(response) {
 
 // Handles a successful post.
 function successfulPost(postID) {
+    // Removes the values stored in textboxes.
+    document.getElementById("post-title").value = "";
+    document.getElementById("post-text").value = "";
+    document.getElementById("post-subseddit").value = "";
+    document.getElementById("post-image").value = "";
     console.log("Successful Post");
     document.getElementById("post-modal").classList.toggle("show-modal");
-    //refreshPage("post");
-    genFeed("newPost", postID);
 
+    // Refreshes the feed.
+    localStorage.setItem("currPost", 0);
+    genFeed("removeCurrentFeed");
+    genFeed("morePrivate");
 }
 
 // Handles a failed post along with errors.
