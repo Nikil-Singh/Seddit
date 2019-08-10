@@ -85,7 +85,7 @@ function showVotes(postID) {
             displayVotes(data.meta.upvotes);
         });
     let upvoteModal = document.getElementById("upvotes-modal");
-    upvoteModal.classList.toggle("show-modal");
+    upvoteModal.classList.toggle("display-modal");
 }
 
 // Cycles through voter IDs and adds them to modal to be displayed.

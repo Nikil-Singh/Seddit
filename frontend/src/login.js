@@ -232,7 +232,7 @@ function successfulLogin(data) {
     console.log("Successful Login");
     // Closes modal.
     let modal = document.getElementById("login-modal");
-    modal.classList.toggle("show-modal");
+    modal.classList.toggle("display-modal");
 
     // Saves token for user in local storage.
     localStorage.setItem("token", data.token);

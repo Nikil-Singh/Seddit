@@ -11,12 +11,10 @@ function scroll() {
         let feed = document.getElementById("feed");
         // Gets window vertical height of window.
         let windowHeight = window.pageYOffset;
-        // Gets the vertical height of the top of the feed.
-        let height = feed.offsetHeight;
         // Sums the window offset height with the windows inner height.
         let total = windowHeight + window.innerHeight;
         // If amount scrolled down exceeds height.
-        if (total >= height) {
+        if (total >= feed.offsetHeight) {
             // Adds more posts to bottom of page.
             console.log("Scroll is adding more posts.");
             if (localStorage.getItem("token") !== null) genFeed("morePrivate");

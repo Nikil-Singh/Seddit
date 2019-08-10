@@ -405,7 +405,7 @@ function updateProfile(email, name, password) {
         .then(data => data.json())
         .then(data => {
             let modal = document.getElementById("update-profile-modal");
-            modal.classList.toggle("show-modal");
+            modal.classList.toggle("display-modal");
         });
 }
 

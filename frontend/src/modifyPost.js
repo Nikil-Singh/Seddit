@@ -436,7 +436,7 @@ function errors(response) {
 
 // Handles a successful update post.
 function successfulPost(postID) {
-    document.getElementById("update-post-modal").classList.toggle("show-modal");
+    document.getElementById("update-post-modal").classList.toggle("display-modal");
     console.log("Successful Update to Post");
 
     // Removes previous feed.
@@ -448,10 +448,10 @@ function successfulPost(postID) {
     genFeed("morePrivate");
 
     // Refreshes required modals and repopulates them with data.
-    document.getElementById("all-posts-modal").classList.toggle("show-modal");
+    document.getElementById("all-posts-modal").classList.toggle("display-modal");
     refreshViewPostsModal();
     populateViewModal()
-    document.getElementById("all-posts-modal").classList.toggle("show-modal");
+    document.getElementById("all-posts-modal").classList.toggle("display-modal");
 }
 
 // Handles a failed update to post along with errors.

@@ -92,13 +92,13 @@ function eventListen() {
     // Event listener for if login button is clicked.
     loginBTN.addEventListener('click', function() {
         console.log("Login Button");
-        loginModal.classList.toggle("show-modal");
+        loginModal.classList.toggle("display-modal");
     });
 
     // Event listener for sign in button on login form modal.
     closeLogin.addEventListener('click', function() {
         console.log("Close Login Modal");
-        loginModal.classList.toggle("show-modal");
+        loginModal.classList.toggle("display-modal");
         // Gets rid of any error messages.
         genLogin("clearErrors");
     });
@@ -136,13 +136,13 @@ function eventListen() {
     // Event listener for when signup button is clicked.
     signupBTN.addEventListener('click', function() {
         console.log("Sign Up Button");
-        signupModal.classList.toggle("show-modal");
+        signupModal.classList.toggle("display-modal");
     });
 
     // Event listener for closing register form modal.
     closeSignup.addEventListener('click', function() {
         console.log("Close Sign Up Modal");
-        signupModal.classList.toggle("show-modal");
+        signupModal.classList.toggle("display-modal");
         // Gets rid of any error messages.
         genSignup("clearErrors");
     })
@@ -160,7 +160,7 @@ function eventListen() {
     // Event listener for closing upvotes modal.
     profileBTN.addEventListener('click', function() {
         console.log("Viewing Own Profile");
-        profileModal.classList.toggle("show-modal");
+        profileModal.classList.toggle("display-modal");
         // Populates the profile modal.
         genProfile("populate");
     })
@@ -168,7 +168,7 @@ function eventListen() {
     // Event listener for closing upvotes modal.
     closeProfile.addEventListener('click', function() {
         console.log("Close Profile Modal");
-        profileModal.classList.toggle("show-modal");
+        profileModal.classList.toggle("display-modal");
         console.log("Refreshing Profile Modal");
         // Removes data from profile modal.
         genProfile("refresh");
@@ -178,7 +178,7 @@ function eventListen() {
     // Event listener for opening modal to update profile.
     profileUpdateBTN.addEventListener('click', function() {
         console.log("Update Profile");
-        profileUpdateModal.classList.toggle("show-modal");
+        profileUpdateModal.classList.toggle("display-modal");
         // Populates the modal with pre-existing information.
         genProfile("populateProfileModal");
     })
@@ -195,7 +195,7 @@ function eventListen() {
     // Event lisyener for closing profile update modal.
     profileUpdateClose.addEventListener('click', function() {
         console.log("Closing Profile Update Modal");
-        profileUpdateModal.classList.toggle("show-modal");
+        profileUpdateModal.classList.toggle("display-modal");
         // Clears errors from modal.
         genProfile("clearErrors");
     })
@@ -204,7 +204,7 @@ function eventListen() {
     // Event listener for viewing all posts.
     viewPosts.addEventListener('click', function() {
         console.log("View Posts");
-        viewPostsModal.classList.toggle("show-modal");
+        viewPostsModal.classList.toggle("display-modal");
         // Populates the modal.
         genModDelPost("populatePostsModal");
     })
@@ -212,7 +212,7 @@ function eventListen() {
     // Event listener for closing all posts modal
     viewPostsClose.addEventListener('click', function() {
         console.log("Closing All Posts Modal");
-        viewPostsModal.classList.toggle("show-modal");
+        viewPostsModal.classList.toggle("display-modal");
         // Refreshes the modal.
         genModDelPost("refreshViewModal");
     })
@@ -221,7 +221,7 @@ function eventListen() {
     // Event listener for opening post modal.
     postBTN.addEventListener('click', function() {
         console.log("Post Button");
-        postModal.classList.toggle("show-modal");
+        postModal.classList.toggle("display-modal");
     })
 
     // Event listener for submitting post.
@@ -237,7 +237,7 @@ function eventListen() {
     // Event listener for closing post modal.
     closePost.addEventListener('click', function() {
         console.log("Closing Post Modal");
-        postModal.classList.toggle("show-modal");
+        postModal.classList.toggle("display-modal");
         // Removes any stored value in post.
         document.getElementById("post-image").value = "";
         document.getElementById("post-title").value = "";
@@ -251,14 +251,14 @@ function eventListen() {
     // Event listener for closing the upvote modal.
     closeUpvote.addEventListener('click', function() {
         console.log("Closing Upvote Modal");
-        upvoteModal.classList.toggle("show-modal");
+        upvoteModal.classList.toggle("display-modal");
     })
 
     // ------ Event Listeners for Comments ------ //
     // Event listener for closing the comments modal.
     closeComments.addEventListener('click', function() {
         console.log("Closing Comment Modal");
-        commentsModal.classList.toggle("show-modal");
+        commentsModal.classList.toggle("display-modal");
         // Removes the comment ID from local storage.
         localStorage.removeItem("commentID");
         // Removes errors from comments modal.
@@ -276,7 +276,7 @@ function eventListen() {
     // Event listener for closing the user pages modal.
     userPageClose.addEventListener('click', function() {
         console.log("Closing User Pages Modal");
-        userPageModal.classList.toggle("show-modal");
+        userPageModal.classList.toggle("display-modal");
         // Refreshes posts on user pages.
         genPages("refreshPost");
         // Removes username of user whose page was being viewed.
@@ -303,7 +303,7 @@ function eventListen() {
     // Event listener to close update post modal.
     closeUpdatePost.addEventListener('click', function() {
         console.log("Closing Update Post Modal");
-        editPostModal.classList.toggle("show-modal");
+        editPostModal.classList.toggle("display-modal");
         // Resets value for image in update modal.
         document.getElementById("update-post-image").value = "";
         // Clears error messages.
@@ -357,7 +357,7 @@ function eventListen() {
                 // Shows the users page, with their details and posts.
                 genPages("refreshPost");
                 genPages("populate", e.target.innerText);
-                userPageModal.classList.toggle("show-modal");
+                userPageModal.classList.toggle("display-modal");
             }
         } else if (e.target.id.includes("edit-posts-btn-")) {
             if (localStorage.getItem("token") !== null) {
@@ -367,7 +367,7 @@ function eventListen() {
                 // Sets ID in local storage.
                 let postID = e.target.id.replace("edit-posts-btn-","");
                 localStorage.setItem("postEdit", postID);
-                editPostModal.classList.toggle("show-modal");
+                editPostModal.classList.toggle("display-modal");
             }
         } else if (e.target.id.includes("delete-posts-btn-")) {
             if (localStorage.getItem("token") !== null) {

@@ -125,8 +125,8 @@ function showComments(postID) {
 
     // Displays comments modal if comments modal isn't already displayed.
     let commentModal = document.getElementById("comments-modal");
-    if (!commentModal.classList.contains("show-modal")) {
-        commentModal.classList.toggle("show-modal");
+    if (!commentModal.classList.contains("display-modal")) {
+        commentModal.classList.toggle("display-modal");
     }
 }
 

@@ -266,7 +266,7 @@ function successfulPost(postID) {
     document.getElementById("post-subseddit").value = "";
     document.getElementById("post-image").value = "";
     console.log("Successful Post");
-    document.getElementById("post-modal").classList.toggle("show-modal");
+    document.getElementById("post-modal").classList.toggle("display-modal");
 
     // Refreshes the feed.
     localStorage.setItem("currPost", 0);

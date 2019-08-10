@@ -235,7 +235,7 @@ function successfulSignup(data) {
     console.log("Successful Register");
     // Closes modal.
     let modal = document.getElementById("signup-modal");
-    modal.classList.toggle("show-modal");
+    modal.classList.toggle("display-modal");
 
     // Saves token for user in local storage.
     localStorage.setItem("token", data.token);
