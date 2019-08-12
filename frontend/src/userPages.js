@@ -111,7 +111,7 @@ function userInfoPara(message, id) {
     let div = document.createElement("div");
     let info = document.createElement("p");
     info.innerText = message;
-    info.classList.add("profile-attributes")
+    info.classList.add("profile-attributes", "bold-text");
     let data = document.createElement("p");
     data.innerText = "";
     data.id = "user-" + id;
@@ -124,7 +124,6 @@ function userInfoPara(message, id) {
 
 // Populates the user pages modal.
 function populateUserPageModal(item) {
-    console.log("Populating User Pages Modal");
     let username = item.replace("Posted by @", "");
     localStorage.setItem("userPageUsername", username);
     // Sets options to get certain details.

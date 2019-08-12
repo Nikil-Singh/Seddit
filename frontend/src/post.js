@@ -155,15 +155,15 @@ function verifyPost() {
     clearErrorMessages();
 
     // Checks if no username or password were given in form.
-    if (title.value === '') {
+    if (title.value.trim() === '') {
         let element = document.getElementById("post-error-title");
         element.innerText = "Title must have more than 0 characters";
         authenticate = 0;
-    } else if (text.value === '') {
+    } else if (text.value.trim() === '') {
         let element = document.getElementById("post-error-text");
         element.innerText = "Text must have more than 0 characters";
         authenticate = 0;
-    } else if (subseddit.value === '') {
+    } else if (subseddit.value.trim() === '') {
         let element = document.getElementById("post-error-subseddit");
         element.innerText = "Subseddit must have more than 0 characters";
         authenticate = 0;
@@ -175,7 +175,6 @@ function verifyPost() {
     clearErrorMessages();
 
     if (image.value != "") {
-        console.log("Image detected");
         // Gets the file.
         let file = document.querySelector('input[type=file]').files[0];
         // Gets the image in base64 form.
@@ -251,7 +250,6 @@ function uploadPost(title, text, subseddit, imageResult) {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
-        console.log("Posting Fetch Error");
         throw (response);
     }
     // Otherwise return the response.
@@ -265,7 +263,6 @@ function successfulPost(postID) {
     document.getElementById("post-text").value = "";
     document.getElementById("post-subseddit").value = "";
     document.getElementById("post-image").value = "";
-    console.log("Successful Post");
     document.getElementById("post-modal").classList.toggle("display-modal");
 
     // Refreshes the feed.
@@ -276,7 +273,6 @@ function successfulPost(postID) {
 
 // Handles a failed post along with errors.
 function failedPost(error) {
-    console.log("Failed Post");
     let imageError = document.getElementById("post-error-image");
     imageError.innerText = "Malformed Request / Image could not be processed";
 }

@@ -215,7 +215,6 @@ function refreshComments() {
 
 // Verifies whether the comment is valid.
 function verifyComment() {
-    console.log(localStorage.getItem("commentID"));
     // Gets value stored in comments.
     const comment = document.getElementById("comment-textbox").value;
 
@@ -248,7 +247,6 @@ function clearErrorMessages() {
 
 // Adds a comment to a post.
 function addComment(comment) {
-    console.log("Adding comment");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     // Holds the parameters needed to call backend for login.

@@ -65,6 +65,18 @@ function createFeedHeader() {
     let text = document.createTextNode("Popular Posts");
     heading.appendChild(text);
 
+    // Creates button to view public posts.
+    let publicBTN = document.createElement("button");
+    publicBTN.classList.add("button", "button-secondary", "button-display");
+    publicBTN.id = "public-button";
+    publicBTN.innerText = "View Public Feed";
+
+    // Creates button to view private posts.
+    let privateBTN = document.createElement("button");
+    privateBTN.classList.add("button", "button-secondary", "button-display");
+    privateBTN.id = "private-button";
+    privateBTN.innerText = "View Private Feed";
+
     // Creates button to post.
     let btn = document.createElement("button");
     btn.classList.add("button", "button-secondary", "button-display");
@@ -74,6 +86,8 @@ function createFeedHeader() {
 
     // Appends all elements to div.
     headDiv.appendChild(heading);
+    headDiv.appendChild(publicBTN);
+    headDiv.appendChild(privateBTN);
     headDiv.appendChild(btn);
 
     return headDiv;
@@ -125,10 +139,9 @@ function emptyFeed() {
 
     // Creates text stating feed is empty.
     let empty = document.createElement("p");
-    let text = document.createTextNode("Currently your feed is empty.");
-
+    empty.innerText = "Currently your feed is empty.";
+    empty.id = "empty-feed";
     // Appends required elements.
-    empty.appendChild(text);
     list.appendChild(empty);
 
     return list;
@@ -145,7 +158,6 @@ function createPost(postData) {
     // Holds the upvotes for the post.
     let votes = document.createElement("div");
     votes.classList.add("vote");
-    votes.setAttribute("data-id-upvotes","");
 
     // Creates arrow to upvote post.
     let upVoteArrow = document.createElement("p");
@@ -167,10 +179,10 @@ function createPost(postData) {
     let numVotes = document.createElement("p");
     numVotes.id = "vote-" + postData.id;
     numVotes.classList.add("post-votes", "upvotes-number");
-    let voteText = document.createTextNode(postData.meta.upvotes.length);
+    numVotes.innerText = postData.meta.upvotes.length;
+    numVotes.setAttribute("data-id-upvotes","");
 
     // Appends required elements to different elements to form feed.
-    numVotes.appendChild(voteText);
     votes.appendChild(upVoteArrow);
     votes.appendChild(numVotes);
 
@@ -188,8 +200,7 @@ function createPost(postData) {
     let title = document.createElement("h4");
     title.classList.add("post-title", "alt-text")
     title.setAttribute("data-id-title","");
-    let text = document.createTextNode(postData.title);
-    title.appendChild(text);
+    title.innerText = postData.title;
 
     //Holds actual post content.
     let post = document.createElement("p");
@@ -209,8 +220,7 @@ function createPost(postData) {
     author.id = "post-author-" + postData.id;
     author.classList.add("post-author");
     author.setAttribute("data-id-author","")
-    let poster = document.createTextNode("Posted by @" + postData.meta.author);
-    author.appendChild(poster);
+    author.innerText = "Posted by @" + postData.meta.author;
 
     // Holds date of post publication.
     let timestamp = getDate(new Date(postData.meta.published * 1000));
@@ -313,7 +323,7 @@ function getPostsPrivate() {
                 appendContent(post, uList);
             }
             // Generates empty feed if user has no posts.
-            if (response.posts.length == 0) {
+            if (response.posts.length == 0 && !document.getElementById("empty-feed")) {
                 let post = emptyFeed();
                 appendContent(post, uList);
             }
@@ -330,7 +340,6 @@ function removeCurrentFeed() {
 
 // Appends a post to the beginning of the feed.
 function appendPost(postID) {
-    console.log("Addind new post to feed");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {

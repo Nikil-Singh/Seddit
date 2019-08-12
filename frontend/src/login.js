@@ -158,11 +158,11 @@ function verifySignIn() {
     clearErrorMessages();
 
     // Checks if no username or password were given in form.
-    if (username.value === '') {
+    if (username.value.trim() === '') {
         let element = document.getElementById("login-error-username");
         element.innerText = "Username must have more than 0 characters";
         authenticate = 0;
-    } else if (password.value === '') {
+    } else if (password.value.trim() === '') {
         let element = document.getElementById("login-error-password");
         element.innerText = "Password must have more than 0 characters";
         authenticate = 0;
@@ -220,7 +220,6 @@ function clearErrorMessages() {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
-        console.log("Sign In Fetch Error");
         throw (response);
     }
     // Otherwise return the response.
@@ -229,7 +228,6 @@ function errors(response) {
 
 // Handles a successful login.
 function successfulLogin(data) {
-    console.log("Successful Login");
     // Closes modal.
     let modal = document.getElementById("login-modal");
     modal.classList.toggle("display-modal");
@@ -245,20 +243,20 @@ function successfulLogin(data) {
     document.getElementById("logout-btn").classList.toggle("button-display");
     document.getElementById("signup-btn").classList.toggle("button-display");
     document.getElementById("profile-view").classList.toggle("button-display");
-    console.log("Removing Previous Feed");
+    document.getElementById("public-button").classList.toggle("button-display");
+    document.getElementById("private-button").classList.toggle("button-display");
+
+    // Switches to the private feed.
+    localStorage.setItem("currFeed", "private");
     genFeed("removeCurrentFeed");
     document.getElementById("post-open-modal").classList.toggle("button-display");
-    console.log("Getting New Feed");
     genFeed("morePrivate");
     document.getElementById("login-username").value = "";
     document.getElementById("login-password").value = "";
-    //refreshPage("feed");
-    //refreshPage("login/signup");
 }
 
 // Handles a failed login along with errors.
 function failedLogin(error) {
-    console.log("Failed Login");
     // First removes any prior error messages.
     let usernameError = document.getElementById("login-error-username");
     document.getElementById("login-error-password").innerText = "";
@@ -274,7 +272,6 @@ function failedLogin(error) {
 
 // Gets the current user's ID.
 function getCurrentUserID() {
-    console.log("Adding current user id to local storage.")
     // Sets options to get user details.
     let tokenString = "Token " + localStorage.token;
     const options = {

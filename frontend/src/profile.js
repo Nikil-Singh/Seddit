@@ -88,6 +88,7 @@ function createProfileModal() {
     // Creates text element.
     let p = document.createElement("p");
     p.innerText = "Following";
+    p.classList.add("bold-text");
     let ul = document.createElement("ul");
     ul.id = "profile-following-list";
 
@@ -184,7 +185,7 @@ function profileInfoPara(message, id) {
     let div = document.createElement("div");
     let info = document.createElement("p");
     info.innerText = message;
-    info.classList.add("profile-attributes")
+    info.classList.add("profile-attributes", "bold-text");
     let data = document.createElement("p");
     data.innerText = "";
     data.id = "profile-" + id;
@@ -252,7 +253,6 @@ function createInputTextbox(itemName) {
 
 // Populates the profile modal with required user information.
 function populateProfileModal() {
-    console.log("Populating Profile Modal");
     // Sets options to get certain details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -313,7 +313,6 @@ function populateProfileModal() {
 
 // Adds the current users details to update modal for changing.
 function populateUpdateModal() {
-    console.log("Populating the update profile modal");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -338,7 +337,6 @@ function populateUpdateModal() {
 // Checks if the user inputted data for updating profile is correct and if so
 // then updates the user's profile.
 function verifyUpdate() {
-    console.log("Verifying update");
     // Gets values stored for email, name and password.
     const email = document.getElementById("profile-update-email").value;
     const name = document.getElementById("profile-update-name").value;
@@ -376,7 +374,6 @@ function verifyUpdate() {
 
 // Updates the user profile with submitted information.
 function updateProfile(email, name, password) {
-    console.log("Updating User Profile");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
 

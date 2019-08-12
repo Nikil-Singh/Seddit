@@ -16,8 +16,10 @@ function scroll() {
         // If amount scrolled down exceeds height.
         if (total >= feed.offsetHeight) {
             // Adds more posts to bottom of page.
-            console.log("Scroll is adding more posts.");
-            if (localStorage.getItem("token") !== null) genFeed("morePrivate");
+            if (localStorage.getItem("token") !== null &&
+                localStorage.getItem("currFeed") !== "public") {
+                genFeed("morePrivate");
+            }
         }
     })
 

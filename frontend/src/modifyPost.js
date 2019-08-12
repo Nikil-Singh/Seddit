@@ -214,7 +214,6 @@ function createInputTextbox(itemName) {
 // Populates the modal with all user posts, allowing for the option to edit or
 // delete any of the posts.
 function populateViewModal() {
-    console.log("Populating User Posts Modal");
     // Sets options to get certain details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -266,7 +265,6 @@ function buttonMaker(item, postID) {
 function deletePost(postID) {
     // Extracts the post ID.
     let id = postID.substring(17, postID.length);
-    console.log("Deleting Post " + id);
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -301,7 +299,6 @@ function deletePost(postID) {
 function populateUpdateModal(postID) {
     // Extracts the post ID.
     let id = postID.substring(15, postID.length);
-    console.log("Populating Update Post Modal");
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {
@@ -345,11 +342,11 @@ function verifyPost() {
     clearErrorMessages();
 
     // Checks if no username or password were given in form.
-    if (title.value === '') {
+    if (title.value.trim() === '') {
         let element = document.getElementById("post-update-error-title");
         element.innerText = "Title must have more than 0 characters";
         authenticate = 0;
-    } else if (text.value === '') {
+    } else if (text.value.trim() === '') {
         let element = document.getElementById("post-update-error-text");
         element.innerText = "Text must have more than 0 characters";
         authenticate = 0;
@@ -362,7 +359,6 @@ function verifyPost() {
 
     // If a new image was selected.
     if (image.value != "") {
-        console.log("New Image detected");
         // Gets the file from image selector.
         let file = document.querySelector('input[type=file]').files[0];
         getImage(file)
@@ -374,14 +370,12 @@ function verifyPost() {
             })
     // If no new image was selected, and previous image was kept.
 } else if (document.getElementById("update-post-image-preview").value != "") {
-        console.log("Old Image detected");
         // Gets the image from image preview.
         let imagePrev = document.getElementById("update-post-image-preview").src;
         imagePrev = imagePrev.replace("data:image/png;base64,", "");
         updatePost(title.value, text.value, imagePrev);
     // If there are no images.
     } else {
-        console.log("No Image detected");
         updatePost(title.value, text.value, "");
     }
 }
@@ -427,7 +421,6 @@ function updatePost(title, text, image) {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
-        console.log("Posting Update Fetch Error");
         throw (response);
     }
     // Otherwise return the response.
@@ -437,7 +430,6 @@ function errors(response) {
 // Handles a successful update post.
 function successfulPost(postID) {
     document.getElementById("update-post-modal").classList.toggle("display-modal");
-    console.log("Successful Update to Post");
 
     // Removes previous feed.
     let uList = document.getElementById("feed");
@@ -456,7 +448,6 @@ function successfulPost(postID) {
 
 // Handles a failed update to post along with errors.
 function failedPost(error) {
-    console.log("Failed Update to Post");
     let imageError = document.getElementById("post-update-error-image");
     imageError.innerText = "Malformed Request / Image could not be processed";
 }

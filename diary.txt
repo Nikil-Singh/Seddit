@@ -18,3 +18,8 @@ Date         Start   End     Comment
 08/08/19     16:00   18:00   Can now make comments and update user profile.
 09/08/19     10:00   12:00   Can now view user pages.
 09/08/19     15:00   16:00   Added basic requirements for following and unfollowing.
+09/08/19     18:00   21:00   Implemented following and unfollowing, also implemented deleting of posts.
+10/08/19     11:00   14:00   Implemented modifying of posts.
+10/08/19     16:00   18:00   Implemented searching of posts.
+10/08/19     20:00   22:00   Improved CSS and cleaned up code, and removed minor bugs.
+12/08/19     12:00   14:00   Gave logged in user option to change between private and public feed.

@@ -3,7 +3,6 @@
 // Allows the user to follow or unfollow another user.
 function follow(command) {
     if (command == "[un]follow") {
-        console.log(document.getElementById("follow-btn").innerText);
         if (document.getElementById("follow-btn").innerText == "FOLLOW") {
             // Follows the user since the user is not followed.
             followUser();
@@ -16,7 +15,6 @@ function follow(command) {
 
 // Follows the required user.
 function followUser() {
-    console.log("Followed User");
     let username = localStorage.getItem("userPageUsername");
     // Sets options to get certain details.
     let tokenString = "Token " + localStorage.token;
@@ -42,7 +40,6 @@ function followUser() {
 
 // Unfollows the required user.
 function unfollowUser() {
-    console.log("Unfollowed User");
     let username = localStorage.getItem("userPageUsername");
     // Sets options to get certain details.
     let tokenString = "Token " + localStorage.token;

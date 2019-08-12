@@ -26,11 +26,9 @@ import scroll from './scroll.js'
 // different datasets.
 function initApp(apiUrl) {
     //localStorage.clear();
-    localStorage.clear();
     localStorage.setItem("api", apiUrl);
     localStorage.setItem("currPost", 0);
     // Initialises the page.
-    console.log("Initialises");
     genNavBar();
     genSearch("generate");
     genLogin("generate");

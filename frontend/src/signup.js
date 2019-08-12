@@ -150,19 +150,19 @@ function verifyRegister() {
     clearErrorMessages();
 
     // Checks if username, password, email or name were not given in form.
-    if (username.value === '') {
+    if (username.value.trim() === '') {
         let element = document.getElementById("signup-error-username");
         element.innerText = "Username must have more than 0 characters";
         authenticate = 0;
-    } else if (password.value === '') {
+    } else if (password.value.trim() === '') {
         let element = document.getElementById("signup-error-password");
         element.innerText = "Password must have more than 0 characters";
         authenticate = 0;
-    } else if (email.value === '') {
+    } else if (email.value.trim() === '') {
         let element = document.getElementById("signup-error-email");
         element.innerText = "Email must have more than 0 characters";
         authenticate = 0;
-    } else if (name.value === '') {
+    } else if (name.value.trim() === '') {
         let element = document.getElementById("signup-error-name");
         element.innerText = "Name must have more than 0 characters";
         authenticate = 0;
@@ -224,7 +224,6 @@ function signupUser(username, password, email, name) {
 function errors(response) {
     // If there is an error.
     if (!response.ok) {
-        console.log("Register Fetch Error");
         throw (response);
     }
     return response;
@@ -232,7 +231,6 @@ function errors(response) {
 
 // Handles successful signup.
 function successfulSignup(data) {
-    console.log("Successful Register");
     // Closes modal.
     let modal = document.getElementById("signup-modal");
     modal.classList.toggle("display-modal");
@@ -249,22 +247,23 @@ function successfulSignup(data) {
     document.getElementById("logout-btn").classList.toggle("button-display");
     document.getElementById("signup-btn").classList.toggle("button-display");
     document.getElementById("profile-view").classList.toggle("button-display");
+    document.getElementById("public-button").classList.toggle("button-display");
+    document.getElementById("private-button").classList.toggle("button-display");
     // Sets value of signup modal to be empty string.
     document.getElementById("signup-username").value = "";
     document.getElementById("signup-password").value = "";
     document.getElementById("signup-email").value = "";
     document.getElementById("signup-name").value = "";
+
     // Removes the previous feed and adds a new logged in feed.
-    console.log("Removing Previous Feed");
+    localStorage.setItem("currFeed", "private");
     genFeed("removeCurrentFeed");
     document.getElementById("post-open-modal").classList.toggle("button-display");
-    console.log("Getting New Feed");
     genFeed("morePrivate");
 }
 
 // Handles a failed signup.
 function failedSignup(error) {
-    console.log("Failed Register");
     // First removes any prior error messages.
     let usernameError = document.getElementById("signup-error-username");
     document.getElementById("login-error-password").innerText = "";
@@ -277,7 +276,6 @@ function failedSignup(error) {
 
 // Gets the current user's ID.
 function getCurrentUserID() {
-    console.log("Adding current user id to local storage.")
     // Sets options to get post details.
     let tokenString = "Token " + localStorage.token;
     const options = {

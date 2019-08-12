@@ -45,7 +45,6 @@ function searchFeed() {
     let searchRequest = document.getElementById("search").value;
     // If the search result is an empty string
     if (searchRequest.trim() == "") {
-        console.log("Empty Search");
         // Empty Search results in original feed reappearing.
         let uList = document.getElementById("feed");
         while (uList.hasChildNodes()) uList.removeChild(uList.firstChild);
@@ -54,7 +53,6 @@ function searchFeed() {
         localStorage.setItem("currPost", 0);
         genFeed("morePrivate");
     } else {
-        console.log("Looking for " + searchRequest);
         searchPosts(searchRequest);
     }
 }
@@ -117,7 +115,6 @@ function checkPost(post, options, searchRequest) {
                 || data.meta.subseddit.includes(searchRequest)) {
 
                 // If search request is in text.
-                console.log("Post contains search request");
                 let post = genFeed("returnPost", data);
                 ul.appendChild(post);
             }
